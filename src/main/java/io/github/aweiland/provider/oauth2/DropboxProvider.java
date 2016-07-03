@@ -1,9 +1,9 @@
 package io.github.aweiland.provider.oauth2;
 
-import com.icyjupiter.api.auth.social.provider.OAuth2Provider;
-import com.icyjupiter.api.auth.social.provider.ProviderRequest;
-import com.icyjupiter.api.auth.social.support.OAuth2Info;
-import com.icyjupiter.api.auth.social.support.ProviderDetails;
+import io.github.aweiland.provider.OAuth2Provider;
+import io.github.aweiland.provider.ProviderRequest;
+import io.github.aweiland.support.OAuth2Info;
+import io.github.aweiland.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,9 +1,9 @@
 package io.github.aweiland.provider.oauth1;
 
-import com.icyjupiter.api.auth.social.provider.OAuth1Provider;
-import com.icyjupiter.api.auth.social.provider.ProviderRequest;
-import com.icyjupiter.api.auth.social.support.OAuth1Info;
-import com.icyjupiter.api.auth.social.support.ProviderDetails;
+import io.github.aweiland.provider.OAuth1Provider;
+import io.github.aweiland.provider.ProviderRequest;
+import io.github.aweiland.support.OAuth1Info;
+import io.github.aweiland.support.ProviderDetails;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;

@@ -1,9 +1,9 @@
 package io.github.aweiland.provider;
 
 
-import com.icyjupiter.api.auth.social.SocialProvider;
-import com.icyjupiter.api.auth.social.support.OAuth1Info;
-import com.icyjupiter.api.auth.social.support.ProviderDetails;
+import io.github.aweiland.SocialProvider;
+import io.github.aweiland.support.OAuth1Info;
+import io.github.aweiland.support.ProviderDetails;
 
 import java.util.Optional;
 

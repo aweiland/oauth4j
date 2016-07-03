@@ -1,10 +1,10 @@
 package io.github.aweiland.provider;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.icyjupiter.api.auth.social.SocialProvider;
-import com.icyjupiter.api.auth.social.support.OAuth2Info;
-import com.icyjupiter.api.auth.social.support.ProviderDetails;
-import org.glassfish.jersey.client.ClientConfig;
+import com.sun.deploy.config.ClientConfig;
+import io.github.aweiland.SocialProvider;
+import io.github.aweiland.support.OAuth2Info;
+import io.github.aweiland.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
