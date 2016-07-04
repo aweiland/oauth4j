@@ -1,13 +1,12 @@
-package io.github.aweiland.provider;
+package io.github.aweiland.oauth4j.provider;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.github.aweiland.SocialProvider;
-import io.github.aweiland.support.OAuth2Info;
-import io.github.aweiland.support.ProviderDetails;
+import io.github.aweiland.oauth4j.SocialProvider;
+import io.github.aweiland.oauth4j.support.OAuth2Info;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -28,14 +27,6 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
 
     public abstract Optional<ProviderDetails> getProviderDetails(ProviderRequest req, String accessToken);
 
-    /**
-     * See if there is a code parameter in the request
-     * @param request
-     * @return
-     */
-    protected Optional<String> getCode(HttpServletRequest request) {
-        return Optional.ofNullable(request.getParameter("code"));
-    }
 
     protected Optional<OAuth2Info> getAccessTokenAndDetails(String code, ProviderRequest req) {
         Client client = ClientBuilder.newClient();

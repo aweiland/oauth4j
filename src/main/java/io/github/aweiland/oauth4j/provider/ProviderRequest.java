@@ -1,4 +1,4 @@
-package io.github.aweiland.provider;
+package io.github.aweiland.oauth4j.provider;
 
 /**
  * Holds data on how to perform a request for a provider.  Oauth consumer keys, etc
@@ -30,6 +30,45 @@ public class ProviderRequest {
      */
     private String requestToken;
 
+    private String oauthVerifier;
+
+    private String oauthToken;
+
+    private String code;
+
+    private String scopes;
+
+    public String getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(String scopes) {
+        this.scopes = scopes;
+    }
+
+    public String getOauthToken() {
+        return oauthToken;
+    }
+
+    public void setOauthToken(String oauthToken) {
+        this.oauthToken = oauthToken;
+    }
+
+    public String getOauthVerifier() {
+        return oauthVerifier;
+    }
+
+    public void setOauthVerifier(String oauthVerifier) {
+        this.oauthVerifier = oauthVerifier;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getKey() {
         return key;

@@ -1,13 +1,12 @@
-package io.github.aweiland.provider.oauth2;
+package io.github.aweiland.oauth4j.provider.oauth2;
 
-import io.github.aweiland.provider.OAuth2Provider;
-import io.github.aweiland.provider.ProviderRequest;
-import io.github.aweiland.support.OAuth2Info;
-import io.github.aweiland.support.ProviderDetails;
+import io.github.aweiland.oauth4j.provider.OAuth2Provider;
+import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.support.OAuth2Info;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -15,27 +14,24 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.util.Optional;
 
-public class GoogleProvider extends OAuth2Provider {
+public class DropboxProvider extends OAuth2Provider {
+    Logger LOGGER = LoggerFactory.getLogger(DropboxProvider.class);
 
-    Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    private final String scopes;
-
-    public GoogleProvider(String authUri, String atUri, String aUri, String scopes) {
+    public DropboxProvider(String authUri, String atUri, String aUri) {
         super(authUri, atUri, aUri);
-        this.scopes = scopes;
-        setName("google");
+        setName("dropbox");
     }
 
     @Override
-    public Optional<ProviderRequest> start(ProviderRequest req, HttpServletRequest request) {
+    public Optional<ProviderRequest> start(ProviderRequest req) {
         req.setRedirectUri(getRedirectUri(req));
         return Optional.of(req);
     }
 
     @Override
-    public Optional<OAuth2Info> verify(ProviderRequest req, HttpServletRequest request) {
-        Optional<String> code = getCode(request);
+    public Optional<OAuth2Info> verify(ProviderRequest req) {
+        Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
     }
 
@@ -45,31 +41,34 @@ public class GoogleProvider extends OAuth2Provider {
         final WebTarget target = client.target(getApiUri())
                 .queryParam("access_token", accessToken);
 
+
         try {
-            final GoogleDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(GoogleDetails.class);
+            final DropboxDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(DropboxDetails.class);
             return Optional.of(new ProviderDetails.Builder()
-                    .provider("google")
-                    .providerId(details.id)
+                    .provider("dropbox")
+                    .providerId(details.uid)
                     .displayName(details.displayName)
                     .build());
         } catch (Exception e) {
             return Optional.empty();
         }
-
     }
 
-    private String getRedirectUri(ProviderRequest req) {
+    String getRedirectUri(ProviderRequest req) {
         return UriBuilder.fromUri(getAuthorizationUri())
                 .queryParam("client_id", req.getKey())
                 .queryParam("redirect_uri", req.getFinishUri())
                 .queryParam("response_type", "code")
-                .queryParam("scope", scopes)
                 .build().toString();
     }
 
-    public static class GoogleDetails {
-        String id;
+
+    public static class DropboxDetails {
+
+        String uid;
 
         String displayName;
+
     }
+
 }

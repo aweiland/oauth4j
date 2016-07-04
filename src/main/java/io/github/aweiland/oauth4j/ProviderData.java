@@ -1,4 +1,4 @@
-package io.github.aweiland;
+package io.github.aweiland.oauth4j;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

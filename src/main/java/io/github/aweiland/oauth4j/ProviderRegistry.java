@@ -1,9 +1,9 @@
-package io.github.aweiland;
+package io.github.aweiland.oauth4j;
 
 
 
-import io.github.aweiland.provider.OAuth1Provider;
-import io.github.aweiland.provider.OAuth2Provider;
+import io.github.aweiland.oauth4j.provider.OAuth1Provider;
+import io.github.aweiland.oauth4j.provider.OAuth2Provider;
 
 import java.util.List;
 import java.util.Optional;

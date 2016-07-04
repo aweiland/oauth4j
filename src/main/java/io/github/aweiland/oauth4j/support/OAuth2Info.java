@@ -1,4 +1,4 @@
-package io.github.aweiland.support;
+package io.github.aweiland.oauth4j.support;
 
 /**
  * Created by aweiland on 1/29/16.

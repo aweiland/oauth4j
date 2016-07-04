@@ -1,15 +1,14 @@
-package io.github.aweiland.provider.oauth2;
+package io.github.aweiland.oauth4j.provider.oauth2;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.github.aweiland.provider.OAuth2Provider;
-import io.github.aweiland.provider.ProviderRequest;
-import io.github.aweiland.support.OAuth2Info;
-import io.github.aweiland.support.ProviderDetails;
+import io.github.aweiland.oauth4j.provider.OAuth2Provider;
+import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.support.OAuth2Info;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -28,14 +27,14 @@ public class FacebookProvider extends OAuth2Provider {
     }
 
     @Override
-    public Optional<ProviderRequest> start(ProviderRequest req, HttpServletRequest request) {
+    public Optional<ProviderRequest> start(ProviderRequest req) {
         req.setRedirectUri(getRedirectUri(req));
         return Optional.of(req);
     }
 
     @Override
-    public Optional<OAuth2Info> verify(ProviderRequest req, HttpServletRequest request) {
-        Optional<String> code = getCode(request);
+    public Optional<OAuth2Info> verify(ProviderRequest req) {
+        Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
     }
 

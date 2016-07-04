@@ -1,9 +1,9 @@
-package io.github.aweiland.provider.oauth1;
+package io.github.aweiland.oauth4j.provider.oauth1;
 
-import io.github.aweiland.provider.OAuth1Provider;
-import io.github.aweiland.provider.ProviderRequest;
-import io.github.aweiland.support.OAuth1Info;
-import io.github.aweiland.support.ProviderDetails;
+import io.github.aweiland.oauth4j.provider.OAuth1Provider;
+import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.support.OAuth1Info;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -12,7 +12,6 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 public class TwitterProvider extends OAuth1Provider {
@@ -24,7 +23,7 @@ public class TwitterProvider extends OAuth1Provider {
 
 
     @Override
-    public Optional<ProviderRequest> start(ProviderRequest req, HttpServletRequest request) {
+    public Optional<ProviderRequest> start(ProviderRequest req) {
         try {
             Twitter twitter = createClient(req);
             RequestToken requestToken = twitter.getOAuthRequestToken(req.getFinishUri());
@@ -38,11 +37,11 @@ public class TwitterProvider extends OAuth1Provider {
     }
 
     @Override
-    public Optional<OAuth1Info> verify(ProviderRequest req, HttpServletRequest request) {
+    public Optional<OAuth1Info> verify(ProviderRequest req) {
         Twitter twitter = createClient(req);
         try {
-            String oauthVerifier = request.getParameter("oauth_verifier");
-            String oauthToken = request.getParameter("oauth_token");
+            String oauthVerifier = req.getOauthVerifier();
+            String oauthToken = req.getOauthToken();
             twitter.setOAuthAccessToken(new AccessToken(oauthToken, oauthVerifier));
 //            AccessToken accessToken = twitter.getOAuthAccessToken(req.getRequestToken(), oauthVerifier);
             AccessToken accessToken = twitter.getOAuthAccessToken(oauthVerifier);

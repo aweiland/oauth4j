@@ -1,9 +1,9 @@
-package io.github.aweiland.provider;
+package io.github.aweiland.oauth4j.provider;
 
 
-import io.github.aweiland.SocialProvider;
-import io.github.aweiland.support.OAuth1Info;
-import io.github.aweiland.support.ProviderDetails;
+import io.github.aweiland.oauth4j.SocialProvider;
+import io.github.aweiland.oauth4j.support.OAuth1Info;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
 
 import java.util.Optional;
 
