@@ -1,7 +1,6 @@
 package io.github.aweiland.provider;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.deploy.config.ClientConfig;
 import io.github.aweiland.SocialProvider;
 import io.github.aweiland.support.OAuth2Info;
 import io.github.aweiland.support.ProviderDetails;
@@ -39,7 +38,6 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     }
 
     protected Optional<OAuth2Info> getAccessTokenAndDetails(String code, ProviderRequest req) {
-        ClientConfig clientConfig = new ClientConfig();
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(getAccessTokenUri());
 
