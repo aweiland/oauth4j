@@ -16,8 +16,8 @@ public abstract class SocialProvider<T extends OAuthInfo> {
 
 
     public SocialProvider(String appId, String appSecret) {
-        appId = appId;
-        appSecret = appSecret;
+        this.appId = appId;
+        this.appSecret = appSecret;
     }
 
 

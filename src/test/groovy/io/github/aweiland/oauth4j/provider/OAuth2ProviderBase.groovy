@@ -12,8 +12,8 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         def provider = createProvider()
 
         expect:
-        provider.appSecret?.trim()
-        provider.appId?.trim()
+        provider?.appSecret?.trim()
+        provider?.appId?.trim()
     }
 
 
