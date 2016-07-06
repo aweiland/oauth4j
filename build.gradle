@@ -33,4 +33,7 @@ dependencies {
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
+}
 
