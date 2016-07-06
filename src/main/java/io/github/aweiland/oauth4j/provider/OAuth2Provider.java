@@ -20,8 +20,9 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Provider.class);
 
-    public OAuth2Provider(String authUri, String atUri, String aUri) {
-        super(authUri, atUri, aUri);
+
+    public OAuth2Provider(String appId, String appSecret) {
+        super(appId, appSecret);
     }
 
 
@@ -31,7 +32,6 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     protected Optional<OAuth2Info> getAccessTokenAndDetails(String code, ProviderRequest req) {
         Client client = ClientBuilder.newClient();
         WebTarget target = client.target(getAccessTokenUri());
-
 
         MultivaluedMap<String, String> body = new MultivaluedHashMap<>();
         body.add("client_id", req.getKey());

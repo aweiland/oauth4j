@@ -13,7 +13,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
 
     @Override
     FacebookProvider createProvider() {
-        def provider = new FacebookProvider(AUTH_URI, TOKEN_URI, API_URI)
+        def provider = new FacebookProvider(CLIENT_ID, CLIENT_SECRET)
         return provider
     }
 }

@@ -8,17 +8,16 @@ import java.util.Optional;
 
 public abstract class SocialProvider<T extends OAuthInfo> {
 
-    private String authorizationUri;
-    private String accessTokenUri;
-    private String apiUri;
+    private String appId;
+    private String appSecret;
 
     // todo make final and require in constructor
     private String name;
 
-    public SocialProvider(String authUri, String atUri, String aUri) {
-        authorizationUri = authUri;
-        accessTokenUri = atUri;
-        apiUri = aUri;
+
+    public SocialProvider(String appId, String appSecret) {
+        appId = appId;
+        appSecret = appSecret;
     }
 
 
@@ -35,29 +34,26 @@ public abstract class SocialProvider<T extends OAuthInfo> {
     public abstract Optional<T> verify(ProviderRequest req);
 
 
-    public String getAuthorizationUri() {
-        return authorizationUri;
+    protected abstract String getAuthUri();
+    protected abstract String getAccessTokenUri();
+
+
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAuthorizationUri(String authorizationUri) {
-        this.authorizationUri = authorizationUri;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
-    public String getAccessTokenUri() {
-        return accessTokenUri;
+    public String getAppSecret() {
+        return appSecret;
     }
 
-    public void setAccessTokenUri(String accessTokenUri) {
-        this.accessTokenUri = accessTokenUri;
+    public void setAppSecret(String appSecret) {
+        this.appSecret = appSecret;
     }
 
-    public String getApiUri() {
-        return apiUri;
-    }
-
-    public void setApiUri(String apiUri) {
-        this.apiUri = apiUri;
-    }
 
     public String getName() {
         return name;

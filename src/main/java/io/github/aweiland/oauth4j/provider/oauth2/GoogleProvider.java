@@ -18,9 +18,13 @@ public class GoogleProvider extends OAuth2Provider {
 
     Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+    private static final String AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
+    private static final String ACCESS_TOKEN_URI = "https://www.googleapis.com/oauth2/v3/token";
+    private static final String API_URI = "https://www.googleapis.com/plus/v1/people/me";
 
-    public GoogleProvider(String authUri, String atUri, String aUri) {
-        super(authUri, atUri, aUri);
+
+    public GoogleProvider(String appId, String appSecret) {
+        super(appId, appSecret);
         setName("google");
     }
 
@@ -39,7 +43,7 @@ public class GoogleProvider extends OAuth2Provider {
     @Override
     public Optional<ProviderDetails> getProviderDetails(ProviderRequest req, String accessToken) {
         Client client = ClientBuilder.newClient();
-        final WebTarget target = client.target(getApiUri())
+        final WebTarget target = client.target(API_URI)
                 .queryParam("access_token", accessToken);
 
         try {
@@ -55,8 +59,18 @@ public class GoogleProvider extends OAuth2Provider {
 
     }
 
+    @Override
+    protected String getAuthUri() {
+        return AUTH_URI;
+    }
+
+    @Override
+    protected String getAccessTokenUri() {
+        return ACCESS_TOKEN_URI;
+    }
+
     private String getRedirectUri(ProviderRequest req) {
-        return UriBuilder.fromUri(getAuthorizationUri())
+        return UriBuilder.fromUri(getAppId())
                 .queryParam("client_id", req.getKey())
                 .queryParam("redirect_uri", req.getFinishUri())
                 .queryParam("response_type", "code")

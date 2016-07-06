@@ -30,12 +30,24 @@ public class ProviderRequest {
      */
     private String requestToken;
 
+    /**
+     * OAuth 1 verifier
+     */
     private String oauthVerifier;
 
+    /**
+     * OAuth 1 verifier token
+     */
     private String oauthToken;
 
+    /**
+     * OAuth2 code for access token exchange
+     */
     private String code;
 
+    /**
+     * OAuth Scopes
+     */
     private String scopes;
 
     public String getScopes() {

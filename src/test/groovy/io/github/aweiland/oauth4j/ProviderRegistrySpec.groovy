@@ -5,8 +5,8 @@ import io.github.aweiland.oauth4j.provider.oauth2.GoogleProvider
 import spock.lang.Specification
 
 class ProviderRegistrySpec extends Specification {
-    def facebookProvider = new FacebookProvider("", "", "")
-    def googleProvider = new GoogleProvider("", "", "")
+    def facebookProvider = new FacebookProvider("", "")
+    def googleProvider = new GoogleProvider("", "")
     def providerRegistry = new ProviderRegistry([facebookProvider, googleProvider])
 
     def "test get not null"() {

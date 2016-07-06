@@ -17,9 +17,14 @@ import java.util.Optional;
 public class DropboxProvider extends OAuth2Provider {
     Logger LOGGER = LoggerFactory.getLogger(DropboxProvider.class);
 
+    private static final String AUTH_URI = "https://www.dropbox.com/1/oauth2/authorize";
+    private static final String ACCESS_TOKEN_URI = "https://api.dropbox.com/1/oauth2/token";
+    private static final String API_URI = "http://api.dropboxapi.com/1/account/info";
 
-    public DropboxProvider(String authUri, String atUri, String aUri) {
-        super(authUri, atUri, aUri);
+
+
+    public DropboxProvider(String appId, String appSecret) {
+        super(appId, appSecret);
         setName("dropbox");
     }
 
@@ -38,7 +43,7 @@ public class DropboxProvider extends OAuth2Provider {
     @Override
     public Optional<ProviderDetails> getProviderDetails(ProviderRequest req, String accessToken) {
         Client client = ClientBuilder.newClient();
-        final WebTarget target = client.target(getApiUri())
+        final WebTarget target = client.target(API_URI)
                 .queryParam("access_token", accessToken);
 
 
@@ -54,8 +59,18 @@ public class DropboxProvider extends OAuth2Provider {
         }
     }
 
+    @Override
+    protected String getAuthUri() {
+        return AUTH_URI;
+    }
+
+    @Override
+    protected String getAccessTokenUri() {
+        return ACCESS_TOKEN_URI;
+    }
+
     String getRedirectUri(ProviderRequest req) {
-        return UriBuilder.fromUri(getAuthorizationUri())
+        return UriBuilder.fromUri(getAppId())
                 .queryParam("client_id", req.getKey())
                 .queryParam("redirect_uri", req.getFinishUri())
                 .queryParam("response_type", "code")

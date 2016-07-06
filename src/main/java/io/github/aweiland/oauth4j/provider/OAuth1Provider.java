@@ -10,8 +10,8 @@ import java.util.Optional;
 public abstract class OAuth1Provider extends SocialProvider<OAuth1Info> {
 
 
-    public OAuth1Provider(String authUri, String atUri, String aUri) {
-        super(authUri, atUri, aUri);
+    public OAuth1Provider(String appId, String appSecret) {
+        super(appId, appSecret);
     }
 
 

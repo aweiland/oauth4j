@@ -16,8 +16,11 @@ import java.util.Optional;
 
 public class TwitterProvider extends OAuth1Provider {
 
-    public TwitterProvider(String authUri, String atUri, String aUri) {
-        super(authUri, atUri, aUri);
+    private static final String AUTH_URI = "https://twitter.com/oauth/request_token";
+    private static final String ACCESS_TOKEN_URI = "https://twitter.com/oauth/access_token";
+
+    public TwitterProvider(String appId, String appSecret) {
+        super(appId, appSecret);
         this.setName("twitter");
     }
 
@@ -64,6 +67,16 @@ public class TwitterProvider extends OAuth1Provider {
         } catch (TwitterException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    protected String getAuthUri() {
+        return AUTH_URI;
+    }
+
+    @Override
+    protected String getAccessTokenUri() {
+        return ACCESS_TOKEN_URI;
     }
 
     private Twitter createClient(ProviderRequest req) {
