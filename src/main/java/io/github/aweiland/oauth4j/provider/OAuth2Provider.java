@@ -34,8 +34,8 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
         WebTarget target = client.target(getAccessTokenUri());
 
         MultivaluedMap<String, String> body = new MultivaluedHashMap<>();
-        body.add("client_id", req.getKey());
-        body.add("client_secret", req.getSecret());
+        body.add("client_id", getAppId());
+        body.add("client_secret", getAppSecret());
         body.add("redirect_uri", req.getFinishUri());
         body.add("code", code);
         body.add("grant_type", "authorization_code");

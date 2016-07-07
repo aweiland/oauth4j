@@ -71,7 +71,7 @@ public class DropboxProvider extends OAuth2Provider {
 
     String getRedirectUri(ProviderRequest req) {
         return UriBuilder.fromUri(getAppId())
-                .queryParam("client_id", req.getKey())
+                .queryParam("client_id", getAppId())
                 .queryParam("redirect_uri", req.getFinishUri())
                 .queryParam("response_type", "code")
                 .build().toString();

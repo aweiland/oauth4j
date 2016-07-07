@@ -81,7 +81,7 @@ public class TwitterProvider extends OAuth1Provider {
 
     private Twitter createClient(ProviderRequest req) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setOAuthConsumerKey(req.getKey()).setOAuthConsumerSecret(req.getSecret());
+        cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret());
 
         TwitterFactory factory = new TwitterFactory(cb.build());
         return factory.getInstance();
@@ -89,7 +89,7 @@ public class TwitterProvider extends OAuth1Provider {
 
     private Twitter createAuthedClient(ProviderRequest req, String token, String tokenSecret) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setOAuthConsumerKey(req.getKey()).setOAuthConsumerSecret(req.getSecret())
+        cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret())
                 .setOAuthAccessToken(token)
                 .setOAuthAccessTokenSecret(tokenSecret);
 

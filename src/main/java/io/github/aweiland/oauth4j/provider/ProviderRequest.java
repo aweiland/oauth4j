@@ -5,15 +5,6 @@ package io.github.aweiland.oauth4j.provider;
  */
 public class ProviderRequest {
 
-    /**
-     * SocialProvider key/consumer key
-     */
-    private String key;
-
-    /**
-     * SocialProvider key/consumer key
-     */
-    private String secret;
 
     /**
      * URI to redirect to at the provider to start the flow
@@ -82,21 +73,6 @@ public class ProviderRequest {
         this.code = code;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
 
     public String getRedirectUri() {
         return redirectUri;
