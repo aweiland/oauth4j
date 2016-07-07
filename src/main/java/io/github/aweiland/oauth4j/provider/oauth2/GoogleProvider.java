@@ -70,7 +70,7 @@ public class GoogleProvider extends OAuth2Provider {
     }
 
     private String getRedirectUri(ProviderRequest req) {
-        return UriBuilder.fromUri(getAppId())
+        return UriBuilder.fromUri(getAuthUri())
                 .queryParam("client_id", getAppId())
                 .queryParam("redirect_uri", req.getFinishUri())
                 .queryParam("response_type", "code")

@@ -54,8 +54,8 @@ public class FacebookProvider extends OAuth2Provider {
 
 
     private String getRedirectUri(ProviderRequest req) {
-        return UriBuilder.fromUri(getAppId())
-                .queryParam("client_id", getAppId())
+        return UriBuilder.fromUri(getAuthUri())
+                .queryParam("client_id", this.getAppId())
                 .queryParam("redirect_uri", req.getFinishUri())
                 .build().toString();
     }
