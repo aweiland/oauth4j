@@ -23,6 +23,8 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
         given:
         def provider = createProvider()
         def req = new ProviderRequest(finishUri: FINISH_URI)
+        def encodedFinish = URLEncoder.encode(FINISH_URI, "UTF-8")
+        def authUri = FacebookProvider.AUTH_URI
 
 
         when:
@@ -30,7 +32,6 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
 
         then:
         red.isPresent()
-        println(red.get().redirectUri)
-        red.get().redirectUri.equals("https://graph.facebook.com/v2.5/oauth/authorize?client_id={$CLIENT_ID}&redirect_uri=http%3A%2F%2Fsite.com%2Ffacebook%2Ffinish")
+        red.get().redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
     }
 }

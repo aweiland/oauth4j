@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public class FacebookProvider extends OAuth2Provider {
 
-    private static final String AUTH_URI = "https://graph.facebook.com/v2.5/oauth/authorize";
+    public static final String AUTH_URI = "https://graph.facebook.com/v2.5/oauth/authorize";
     private static final String ACCESS_TOKEN_URI = "https://graph.facebook.com/v2.5/oauth/access_token";
     private static final String API_URI = "https://graph.facebook.com/v2.5/me";
 

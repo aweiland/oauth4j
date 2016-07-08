@@ -2,6 +2,7 @@ package io.github.aweiland.oauth4j.provider;
 
 /**
  * Holds data on how to perform a request for a provider.  Oauth consumer keys, etc
+ * TODO break this up
  */
 public class ProviderRequest {
 
