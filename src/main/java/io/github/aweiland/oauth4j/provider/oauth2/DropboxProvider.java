@@ -1,9 +1,13 @@
 package io.github.aweiland.oauth4j.provider.oauth2;
 
 import io.github.aweiland.oauth4j.provider.OAuth2Provider;
-import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.provider.flow.AuthStart;
+import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
+import io.github.aweiland.oauth4j.provider.flow.StartRequest;
+import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuth2Info;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
+import io.github.aweiland.oauth4j.support.ReturnUriHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,19 +33,18 @@ public class DropboxProvider extends OAuth2Provider {
     }
 
     @Override
-    public Optional<ProviderRequest> start(ProviderRequest req) {
-        req.setRedirectUri(getRedirectUri(req));
-        return Optional.of(req);
+    public Optional<AuthStart> start(StartRequest req) {
+        return Optional.of(new AuthStart.Builder().redirectUri(getRedirectUri(req)).build());
     }
 
     @Override
-    public Optional<OAuth2Info> verify(ProviderRequest req) {
+    public Optional<OAuth2Info> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
     }
 
     @Override
-    public Optional<ProviderDetails> getProviderDetails(ProviderRequest req, String accessToken) {
+    public Optional<ProviderDetails> getProviderDetails(String accessToken) {
         Client client = ClientBuilder.newClient();
         final WebTarget target = client.target(API_URI)
                 .queryParam("access_token", accessToken);
@@ -69,10 +72,10 @@ public class DropboxProvider extends OAuth2Provider {
         return ACCESS_TOKEN_URI;
     }
 
-    String getRedirectUri(ProviderRequest req) {
+    private <T extends AppDataHolder & ReturnUriHolder> String getRedirectUri(T req) {
         return UriBuilder.fromUri(getAuthUri())
                 .queryParam("client_id", getAppId())
-                .queryParam("redirect_uri", req.getFinishUri())
+                .queryParam("redirect_uri", req.getReturnUri())
                 .queryParam("response_type", "code")
                 .build().toString();
     }

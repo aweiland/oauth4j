@@ -1,5 +1,6 @@
 package io.github.aweiland.oauth4j.provider
 
+import io.github.aweiland.oauth4j.provider.flow.StartRequest
 import io.github.aweiland.oauth4j.provider.oauth2.FacebookProvider
 
 
@@ -22,16 +23,19 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
     def "Test get Redirect URI from start"() {
         given:
         def provider = createProvider()
-        def req = new ProviderRequest(finishUri: FINISH_URI)
+        def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).returnUri(FINISH_URI).build()
         def encodedFinish = URLEncoder.encode(FINISH_URI, "UTF-8")
         def authUri = FacebookProvider.AUTH_URI
-
 
         when:
         def red = provider.start(req)
 
         then:
-        red.isPresent()
-        red.get().redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
+        red.present
+        def authStart = red.get()
+
+        and:
+        authStart.redirectUri != null
+        authStart.redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
     }
 }
