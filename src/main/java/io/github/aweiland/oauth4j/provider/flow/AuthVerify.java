@@ -1,26 +1,21 @@
 package io.github.aweiland.oauth4j.provider.flow;
 
-import io.github.aweiland.oauth4j.support.AppDataHolder;
-import io.github.aweiland.oauth4j.support.ReturnUriHolder;
-import io.github.aweiland.oauth4j.support.ScopesHolder;
+import io.github.aweiland.oauth4j.support.*;
 
-import java.util.Optional;
+public class AuthVerify implements CodeHolder, RequestTokenHolder, AppDataHolder, ReturnUriHolder {
 
-/**
- * Holds the data to start an OAuth flow
- */
-public final class StartRequest implements AppDataHolder, ReturnUriHolder {
-
+    private final String code;
+    private final String requestToken;
     private final String appId;
     private final String appSecret;
     private final String returnUri;
-    private final Optional<String> scopes;
 
-    private StartRequest(Builder builder) {
+    private AuthVerify(Builder builder) {
         appId = builder.appId;
+        code = builder.code;
+        requestToken = builder.requestToken;
         appSecret = builder.appSecret;
         returnUri = builder.returnUri;
-        scopes = builder.scopes;
     }
 
 
@@ -35,32 +30,51 @@ public final class StartRequest implements AppDataHolder, ReturnUriHolder {
     }
 
     @Override
+    public String getCode() {
+        return code;
+    }
+
+    @Override
+    public String getRequestToken() {
+        return requestToken;
+    }
+
+    @Override
     public String getReturnUri() {
         return returnUri;
     }
 
-    public Optional<String> getScopes() {
-        return scopes;
-    }
 
     public static final class Builder {
         private String appId;
+        private String code;
+        private String requestToken;
         private String appSecret;
         private String returnUri;
-        private Optional<String> scopes = Optional.empty();
 
         public Builder() {
         }
 
-        public Builder(StartRequest copy) {
+        public Builder(AuthVerify copy) {
             this.appId = copy.appId;
+            this.code = copy.code;
+            this.requestToken = copy.requestToken;
             this.appSecret = copy.appSecret;
             this.returnUri = copy.returnUri;
-            this.scopes = copy.scopes;
         }
 
         public Builder appId(String val) {
             appId = val;
+            return this;
+        }
+
+        public Builder code(String val) {
+            code = val;
+            return this;
+        }
+
+        public Builder requestToken(String val) {
+            requestToken = val;
             return this;
         }
 
@@ -74,13 +88,8 @@ public final class StartRequest implements AppDataHolder, ReturnUriHolder {
             return this;
         }
 
-        public Builder scopes(Optional<String> val) {
-            scopes = val;
-            return this;
-        }
-
-        public StartRequest build() {
-            return new StartRequest(this);
+        public AuthVerify build() {
+            return new AuthVerify(this);
         }
     }
 }

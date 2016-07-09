@@ -2,13 +2,11 @@ package io.github.aweiland.oauth4j.provider.oauth2;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.aweiland.oauth4j.provider.flow.AuthStart;
+import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.provider.OAuth2Provider;
-import io.github.aweiland.oauth4j.provider.ProviderRequest;
-import io.github.aweiland.oauth4j.support.AppDataHolder;
-import io.github.aweiland.oauth4j.support.OAuth2Info;
-import io.github.aweiland.oauth4j.support.ProviderDetails;
-import io.github.aweiland.oauth4j.support.ReturnUriHolder;
+import io.github.aweiland.oauth4j.support.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +32,14 @@ public class FacebookProvider extends OAuth2Provider {
     }
 
     @Override
-    public <T extends AppDataHolder & ReturnUriHolder> Optional<String> start(T req) {
-        return Optional.of(getRedirectUri(req));
+    public Optional<AuthStart> start(StartRequest req) {
+        AuthStart start = new AuthStart.Builder().redirectUri(getRedirectUri(req)).build();
+        return Optional.of(start);
     }
 
 
     @Override
-    public Optional<OAuth2Info> verify(ProviderRequest req) {
+    public Optional<OAuth2Info> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
     }
@@ -56,7 +55,7 @@ public class FacebookProvider extends OAuth2Provider {
     }
 
 
-    private <T extends AppDataHolder & ReturnUriHolder> String getRedirectUri(T req) {
+    private String getRedirectUri(StartRequest req) {
         return UriBuilder.fromUri(getAuthUri())
                 .queryParam("client_id", this.getAppId())
                 .queryParam("redirect_uri", req.getReturnUri())
@@ -64,7 +63,7 @@ public class FacebookProvider extends OAuth2Provider {
     }
 
     @Override
-    public Optional<ProviderDetails> getProviderDetails(ProviderRequest req, String accessToken) {
+    public Optional<ProviderDetails> getProviderDetails(String accessToken) {
         Client client = ClientBuilder.newClient();
         final WebTarget target = client.target(API_URI)
                 .queryParam("access_token", accessToken)
