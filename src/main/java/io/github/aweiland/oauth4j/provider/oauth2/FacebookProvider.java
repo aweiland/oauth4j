@@ -2,10 +2,13 @@ package io.github.aweiland.oauth4j.provider.oauth2;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.provider.OAuth2Provider;
 import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuth2Info;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
+import io.github.aweiland.oauth4j.support.ReturnUriHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +34,10 @@ public class FacebookProvider extends OAuth2Provider {
     }
 
     @Override
-    public Optional<ProviderRequest> start(ProviderRequest req) {
-        req.setRedirectUri(getRedirectUri(req));
-        return Optional.of(req);
+    public <T extends AppDataHolder & ReturnUriHolder> Optional<String> start(T req) {
+        return Optional.of(getRedirectUri(req));
     }
+
 
     @Override
     public Optional<OAuth2Info> verify(ProviderRequest req) {
@@ -53,10 +56,10 @@ public class FacebookProvider extends OAuth2Provider {
     }
 
 
-    private String getRedirectUri(ProviderRequest req) {
+    private <T extends AppDataHolder & ReturnUriHolder> String getRedirectUri(T req) {
         return UriBuilder.fromUri(getAuthUri())
                 .queryParam("client_id", this.getAppId())
-                .queryParam("redirect_uri", req.getFinishUri())
+                .queryParam("redirect_uri", req.getReturnUri())
                 .build().toString();
     }
 

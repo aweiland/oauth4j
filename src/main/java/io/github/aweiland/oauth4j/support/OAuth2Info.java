@@ -1,9 +1,9 @@
 package io.github.aweiland.oauth4j.support;
 
 /**
- * Created by aweiland on 1/29/16.
+ * OAuth 2 user info
  */
-public class OAuth2Info extends OAuthInfo {
+public class OAuth2Info extends OAuthInfo implements TokenHolder {
 
     private final String accessToken;
     private final String tokenType;
@@ -21,10 +21,12 @@ public class OAuth2Info extends OAuthInfo {
     }
 
 
-    public String getAccessToken() {
+    @Override
+    public String getToken() {
         return accessToken;
     }
 
+    @Override
     public String getTokenType() {
         return tokenType;
     }
@@ -33,10 +35,15 @@ public class OAuth2Info extends OAuthInfo {
         return expiresIn;
     }
 
+    @Override
     public String getRefreshToken() {
         return refreshToken;
     }
 
+    @Override
+    public String getSecretToken() {
+        throw new UnsupportedOperationException("Secret not supported in OAuth 2.");
+    }
 
     public static final class Builder {
         private String provider;

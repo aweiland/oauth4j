@@ -2,7 +2,10 @@ package io.github.aweiland.oauth4j;
 
 
 import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuthInfo;
+import io.github.aweiland.oauth4j.support.ReturnUriHolder;
+import io.github.aweiland.oauth4j.support.TokenHolder;
 
 import java.util.Optional;
 
@@ -25,7 +28,7 @@ public abstract class SocialProvider<T extends OAuthInfo> {
      * Start an OAuth authentication
      * @return
      */
-    public abstract Optional<ProviderRequest> start(ProviderRequest req);
+    public abstract <T extends AppDataHolder & ReturnUriHolder> Optional<String> start(T req);
 
     /**
      * Verify, get access token, etc.  Return details
