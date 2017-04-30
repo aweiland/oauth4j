@@ -23,8 +23,8 @@ public class TwitterProvider extends OAuth1Provider {
     private static final String ACCESS_TOKEN_URI = "https://twitter.com/oauth/access_token";
 
     public TwitterProvider(String appId, String appSecret) {
-        super(appId, appSecret);
-        this.setName("twitter");
+        super("twitter", "Twitter", appId, appSecret);
+
     }
 
     @Override

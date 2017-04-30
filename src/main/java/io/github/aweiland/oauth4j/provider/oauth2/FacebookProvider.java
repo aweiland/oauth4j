@@ -27,8 +27,7 @@ public class FacebookProvider extends OAuth2Provider {
 
 
     public FacebookProvider(String appId, String appSecret) {
-        super(appId, appSecret);
-        setName("facebook");
+        super("facebook", "Facebook", appId, appSecret);
     }
 
     @Override

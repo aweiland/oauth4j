@@ -23,8 +23,8 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Provider.class);
 
 
-    public OAuth2Provider(String appId, String appSecret) {
-        super(appId, appSecret);
+    public OAuth2Provider(String name, String displayName, String appId, String appSecret) {
+        super(name, displayName, appId, appSecret);
     }
 
 

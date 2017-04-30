@@ -14,10 +14,13 @@ public abstract class SocialProvider<T extends OAuthInfo> {
     private String appSecret;
 
     // todo make final and require in constructor
-    private String name;
+    private final String name;
+    private final String displayName;
 
 
-    public SocialProvider(String appId, String appSecret) {
+    public SocialProvider(String name, String displayName, String appId, String appSecret) {
+        this.name = name;
+        this.displayName = displayName;
         this.appId = appId;
         this.appSecret = appSecret;
     }
@@ -61,7 +64,4 @@ public abstract class SocialProvider<T extends OAuthInfo> {
         return name;
     }
 
-    protected void setName(String name) {
-        this.name = name;
-    }
 }

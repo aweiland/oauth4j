@@ -26,8 +26,7 @@ public class GoogleProvider extends OAuth2Provider {
 
 
     public GoogleProvider(String appId, String appSecret) {
-        super(appId, appSecret);
-        setName("google");
+        super("google", "Google", appId, appSecret);
     }
 
     @Override

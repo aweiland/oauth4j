@@ -28,8 +28,7 @@ public class DropboxProvider extends OAuth2Provider {
 
 
     public DropboxProvider(String appId, String appSecret) {
-        super(appId, appSecret);
-        setName("dropbox");
+        super("dropbox", "Dropbox", appId, appSecret);
     }
 
     @Override
