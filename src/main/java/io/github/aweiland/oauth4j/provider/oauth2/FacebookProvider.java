@@ -66,7 +66,7 @@ public class FacebookProvider extends OAuth2Provider {
         Client client = ClientBuilder.newClient();
         final WebTarget target = client.target(API_URI)
                 .queryParam("access_token", accessToken)
-                .queryParam("fields", "name,first_name,last_name,picture,email");
+                .queryParam("fields", "name,first_name,last_name,picture");
 
 
         // FB bday can be MM/DD/YYYY or MM/DD or YYYY
@@ -101,8 +101,6 @@ public class FacebookProvider extends OAuth2Provider {
 
         @JsonProperty("last_name")
         String lastName;
-
-        public String email;
 
 
     }
