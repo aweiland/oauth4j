@@ -1,7 +1,9 @@
 package io.github.aweiland.oauth4j;
 
 
-import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.provider.flow.AuthStart;
+import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
+import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.support.OAuthInfo;
 
 import java.util.Optional;
@@ -12,10 +14,13 @@ public abstract class SocialProvider<T extends OAuthInfo> {
     private String appSecret;
 
     // todo make final and require in constructor
-    private String name;
+    private final String name;
+    private final String displayName;
 
 
-    public SocialProvider(String appId, String appSecret) {
+    public SocialProvider(String name, String displayName, String appId, String appSecret) {
+        this.name = name;
+        this.displayName = displayName;
         this.appId = appId;
         this.appSecret = appSecret;
     }
@@ -25,13 +30,13 @@ public abstract class SocialProvider<T extends OAuthInfo> {
      * Start an OAuth authentication
      * @return
      */
-    public abstract Optional<ProviderRequest> start(ProviderRequest req);
+    public abstract Optional<AuthStart> start(StartRequest req);
 
     /**
      * Verify, get access token, etc.  Return details
      * @return
      */
-    public abstract Optional<T> verify(ProviderRequest req);
+    public abstract Optional<T> verify(AuthVerify req);
 
 
     protected abstract String getAuthUri();
@@ -59,7 +64,4 @@ public abstract class SocialProvider<T extends OAuthInfo> {
         return name;
     }
 
-    protected void setName(String name) {
-        this.name = name;
-    }
 }

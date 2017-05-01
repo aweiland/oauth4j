@@ -1,7 +1,10 @@
 package io.github.aweiland.oauth4j.provider.oauth1;
 
 import io.github.aweiland.oauth4j.provider.OAuth1Provider;
-import io.github.aweiland.oauth4j.provider.ProviderRequest;
+import io.github.aweiland.oauth4j.provider.flow.AuthStart;
+import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
+import io.github.aweiland.oauth4j.provider.flow.StartRequest;
+import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuth1Info;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
 import twitter4j.Twitter;
@@ -20,31 +23,31 @@ public class TwitterProvider extends OAuth1Provider {
     private static final String ACCESS_TOKEN_URI = "https://twitter.com/oauth/access_token";
 
     public TwitterProvider(String appId, String appSecret) {
-        super(appId, appSecret);
-        this.setName("twitter");
+        super("twitter", "Twitter", appId, appSecret);
+
     }
 
-
     @Override
-    public Optional<ProviderRequest> start(ProviderRequest req) {
+    public Optional<AuthStart> start(StartRequest req) {
         try {
             Twitter twitter = createClient(req);
-            RequestToken requestToken = twitter.getOAuthRequestToken(req.getFinishUri());
-            req.setRedirectUri(requestToken.getAuthorizationURL());
-            req.setRequestToken(requestToken.getToken());
+            RequestToken requestToken = twitter.getOAuthRequestToken(req.getReturnUri());
 
-            return Optional.of(req);
+            return Optional.of(new AuthStart.Builder().redirectUri(requestToken.getAuthorizationURL()).requestToken(requestToken.getToken()).build());
         } catch (TwitterException e) {
             return Optional.empty();
         }
+
     }
 
+
+
     @Override
-    public Optional<OAuth1Info> verify(ProviderRequest req) {
-        Twitter twitter = createClient(req);
+    public Optional<OAuth1Info> verify(AuthVerify req) {
+        Twitter twitter = createClient(req); // new TwitterFactory().getInstance();//FIXME createClient(req);
         try {
-            String oauthVerifier = req.getOauthVerifier();
-            String oauthToken = req.getOauthToken();
+            String oauthVerifier = req.getCode();// getOauthVerifier();
+            String oauthToken = req.getRequestToken();
             twitter.setOAuthAccessToken(new AccessToken(oauthToken, oauthVerifier));
 //            AccessToken accessToken = twitter.getOAuthAccessToken(req.getRequestToken(), oauthVerifier);
             AccessToken accessToken = twitter.getOAuthAccessToken(oauthVerifier);
@@ -60,9 +63,9 @@ public class TwitterProvider extends OAuth1Provider {
     }
 
     @Override
-    public Optional<ProviderDetails> getProviderDetails(ProviderRequest req, String token, String tokenSecret) {
+    public Optional<ProviderDetails> getProviderDetails(AppDataHolder appData, String token, String tokenSecret) {
         try {
-            User user = createAuthedClient(req, token, tokenSecret).verifyCredentials();
+            User user = createAuthedClient(appData, token, tokenSecret).verifyCredentials();
             return Optional.of(new ProviderDetails.Builder().provider("twitter").providerId(Long.valueOf(user.getId()).toString()).build());
         } catch (TwitterException e) {
             return Optional.empty();
@@ -79,7 +82,7 @@ public class TwitterProvider extends OAuth1Provider {
         return ACCESS_TOKEN_URI;
     }
 
-    private Twitter createClient(ProviderRequest req) {
+    private Twitter createClient(AppDataHolder req) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret());
 
@@ -87,7 +90,7 @@ public class TwitterProvider extends OAuth1Provider {
         return factory.getInstance();
     }
 
-    private Twitter createAuthedClient(ProviderRequest req, String token, String tokenSecret) {
+    private Twitter createAuthedClient(AppDataHolder req, String token, String tokenSecret) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret())
                 .setOAuthAccessToken(token)
