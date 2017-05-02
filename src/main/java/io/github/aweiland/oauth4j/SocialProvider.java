@@ -64,4 +64,7 @@ public abstract class SocialProvider<T extends OAuthInfo> {
         return name;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
 }
