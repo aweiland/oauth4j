@@ -2,6 +2,8 @@ package io.github.aweiland.oauth4j.provider.oauth2;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 import io.github.aweiland.oauth4j.provider.flow.AuthStart;
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
@@ -10,11 +12,6 @@ import io.github.aweiland.oauth4j.support.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import java.util.Optional;
 
 public class FacebookProvider extends OAuth2Provider {
@@ -55,23 +52,32 @@ public class FacebookProvider extends OAuth2Provider {
 
 
     private String getRedirectUri(StartRequest req) {
-        return UriBuilder.fromUri(getAuthUri())
-                .queryParam("client_id", this.getAppId())
-                .queryParam("redirect_uri", req.getReturnUri())
-                .build().toString();
+        return Unirest.get(getAuthUri()).queryString("client_id", this.getAppId())
+                .queryString("redirect_uri", req.getReturnUri())
+                .getUrl();
+//        return UriBuilder.fromUri(getAuthUri())
+//                .queryParam("client_id", this.getAppId())
+//                .queryParam("redirect_uri", req.getReturnUri())
+//                .build().toString();
     }
 
     @Override
     public Optional<ProviderDetails> getProviderDetails(String accessToken) {
-        Client client = ClientBuilder.newClient();
-        final WebTarget target = client.target(API_URI)
-                .queryParam("access_token", accessToken)
-                .queryParam("fields", "name,first_name,last_name,picture");
+//        Client client = ClientBuilder.newClient();
+//
+//        final WebTarget target = client.target(API_URI)
+//                .queryParam("access_token", accessToken)
+//                .queryParam("fields", "name,first_name,last_name,picture");
 
 
         // FB bday can be MM/DD/YYYY or MM/DD or YYYY
         try {
-            final FacebookDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(FacebookDetails.class);
+//            final FacebookDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(FacebookDetails.class);
+            final HttpResponse<FacebookDetails> response = Unirest.get(API_URI).queryString("access_token", accessToken)
+                    .queryString("fields", "name,first_name,last_name,picture").asObject(FacebookDetails.class);
+
+            final FacebookDetails details = response.getBody();
+
             return Optional.of(new ProviderDetails.Builder()
                     .provider("facebook")
 //                    .profileUri(resp.get("link").toString())

@@ -1,5 +1,7 @@
 package io.github.aweiland.oauth4j.provider.oauth2;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 import io.github.aweiland.oauth4j.provider.OAuth2Provider;
 import io.github.aweiland.oauth4j.provider.flow.AuthStart;
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
@@ -9,11 +11,11 @@ import io.github.aweiland.oauth4j.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
+//import javax.ws.rs.client.Client;
+//import javax.ws.rs.client.ClientBuilder;
+//import javax.ws.rs.client.WebTarget;
+//import javax.ws.rs.core.MediaType;
+//import javax.ws.rs.core.UriBuilder;
 import java.util.Optional;
 
 public class GoogleProvider extends OAuth2Provider {
@@ -42,12 +44,18 @@ public class GoogleProvider extends OAuth2Provider {
 
     @Override
     public Optional<ProviderDetails> getProviderDetails(String accessToken) {
-        Client client = ClientBuilder.newClient();
-        final WebTarget target = client.target(API_URI)
-                .queryParam("access_token", accessToken);
+//        Client client = ClientBuilder.newClient();
+//        final WebTarget target = client.target(API_URI)
+//                .queryParam("access_token", accessToken);
 
         try {
-            final GoogleDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(GoogleDetails.class);
+            final HttpResponse<GoogleDetails> response = Unirest.get(API_URI)
+                    .queryString("access_token", accessToken)
+                    .header("Accept", "application/json")
+                    .asObject(GoogleDetails.class);
+
+//            final GoogleDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(GoogleDetails.class);
+            final GoogleDetails details = response.getBody();
             return Optional.of(new ProviderDetails.Builder()
                     .provider("google")
                     .providerId(details.id)
@@ -70,12 +78,19 @@ public class GoogleProvider extends OAuth2Provider {
     }
 
     private String getRedirectUri(StartRequest req) {
-        return UriBuilder.fromUri(getAuthUri())
-                .queryParam("client_id", getAppId())
-                .queryParam("redirect_uri", req.getReturnUri())
-                .queryParam("response_type", "code")
-                .queryParam("scope", req.getScopes().orElseThrow(() -> { return new IllegalArgumentException("Scopes are required"); }))
-                .build().toString();
+        return Unirest.get(getAuthUri())
+                .queryString("client_id", this.getAppId())
+                .queryString("redirect_uri", req.getReturnUri())
+                .queryString("response_type", "code")
+                .queryString("scope", req.getScopes().orElseThrow(() -> { return new IllegalArgumentException("Scopes are required"); }))
+                .getUrl();
+
+//        return UriBuilder.fromUri(getAuthUri())
+//                .queryParam("client_id", getAppId())
+//                .queryParam("redirect_uri", req.getReturnUri())
+//                .queryParam("response_type", "code")
+//                .queryParam("scope", req.getScopes().orElseThrow(() -> { return new IllegalArgumentException("Scopes are required"); }))
+//                .build().toString();
     }
 
     public static class GoogleDetails {
