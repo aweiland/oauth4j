@@ -63,13 +63,6 @@ public class FacebookProvider extends OAuth2Provider {
 
     @Override
     public Optional<ProviderDetails> getProviderDetails(String accessToken) {
-//        Client client = ClientBuilder.newClient();
-//
-//        final WebTarget target = client.target(API_URI)
-//                .queryParam("access_token", accessToken)
-//                .queryParam("fields", "name,first_name,last_name,picture");
-
-
         // FB bday can be MM/DD/YYYY or MM/DD or YYYY
         try {
 //            final FacebookDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(FacebookDetails.class);

@@ -42,11 +42,6 @@ public class DropboxProvider extends OAuth2Provider {
 
     @Override
     public Optional<ProviderDetails> getProviderDetails(String accessToken) {
-//        Client client = ClientBuilder.newClient();
-//        final WebTarget target = client.target(API_URI)
-//                .queryParam("access_token", accessToken);
-
-
         try {
             final HttpResponse<DropboxDetails> response = Unirest.get(API_URI).queryString("access_token", accessToken)
                     .asObject(DropboxDetails.class);
