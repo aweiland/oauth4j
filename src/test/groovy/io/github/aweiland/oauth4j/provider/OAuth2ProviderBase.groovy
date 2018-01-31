@@ -1,9 +1,13 @@
 package io.github.aweiland.oauth4j.provider
 
 import spock.lang.Specification
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 
 abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specification {
+    
+    WireMockServer wireMockServer = new WireMockServer(options().dynamicPort())
+    WireMock wireMock = new WireMock("localhost", wireMockServer.port)
 
     abstract P createProvider()
 
@@ -17,10 +21,29 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
     }
 
     abstract MockServerClient createMockServerForToken()
+    
+    def setup() {
+        wireMockServer.start()
+    }
+    
+    def cleanup() {
+        wireMockServer.stop()
+    }
 
     // TODO Move this to abstract functions
     def "Test got access token"() {
-        setup:
+        given:
+        def provider = createProvider()
+        provider.setAccessTokenUri("http://localhost:${wireMockServer.port}/token")
+        
+        and:
+        // Not mockserver, wiremock instead!
+        wireMock.register(post(urlEqualTo("/token"))
+                .willReturn(aResponse())
+                .withStatus(200)
+                .withBody(expectedUserName)
+        ))
+        
         // http://www.baeldung.com/mockserver
         def mockServer = new MockServerClient("127.0.0.1", 1080)
             .when(request()
@@ -40,8 +63,7 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
 }
                 """.stripIndent()))
                 
-        def provider = createProvider()
-        provider.setAccessTokenUri("http://localhost:1080/token")
+        
         //def http = Mock(HTTPBuilder)
         //provider.createHttpClient(_) >> http
 

@@ -43,6 +43,8 @@ dependencies {
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'org.mock-server:mockserver-netty:5.3.0'
     testCompile 'org.mock-server:mockserver-client-java:5.3.0'
+    testCompile 'com.github.tomakehurst:wiremock:2.14.0''
+
 }
 
 task wrapper(type: Wrapper) {
