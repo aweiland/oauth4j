@@ -19,8 +19,6 @@ repositories {
 
 
 dependencies {
-//    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0'
-    // https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-common
 
     compile 'com.mashape.unirest:unirest-java:1.4.9'
     compile 'org.twitter4j:twitter4j-core:4.0.4'
@@ -43,6 +41,8 @@ dependencies {
 
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.6'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'org.mock-server:mockserver-netty:5.3.0'
+    testCompile 'org.mock-server:mockserver-client-java:5.3.0'
 }
 
 task wrapper(type: Wrapper) {

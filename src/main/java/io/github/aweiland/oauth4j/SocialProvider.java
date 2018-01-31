@@ -40,7 +40,11 @@ public abstract class SocialProvider<T extends OAuthInfo> {
 
 
     protected abstract String getAuthUri();
+    // Useful for testing
+    protected abstract void setAuthUri(String uri);
     protected abstract String getAccessTokenUri();
+    
+    protected abstract void setAccessTokenUri(String ui);
 
 
     public String getAppId() {

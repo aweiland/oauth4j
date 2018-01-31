@@ -16,21 +16,42 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         provider?.appId?.trim()
     }
 
+    abstract MockServerClient createMockServerForToken()
 
+    // TODO Move this to abstract functions
+    def "Test got access token"() {
+        setup:
+        // http://www.baeldung.com/mockserver
+        def mockServer = new MockServerClient("127.0.0.1", 1080)
+            .when(request()
+                    .withMethod("POST")
+                    .withPath("/token")
+                     .withBody(exact("{username: 'foo', password: 'bar'}")))
+            .respond(response()
+                .withStatusCode(HttpStatusCode.OK_200.code())
+                .withHeaders(
+                    header(CONTENT_TYPE.toString(), MediaType.JSON.toString())
+                )
+                .withBody("""
+{
+  "access_token": "1234567890-asfsaf", 
+  "token_type": "Bearer",
+  "expires_in":  100
+}
+                """.stripIndent()))
+                
+        def provider = createProvider()
+        provider.setAccessTokenUri("http://localhost:1080/token")
+        //def http = Mock(HTTPBuilder)
+        //provider.createHttpClient(_) >> http
 
-//    def "Test got access token"() {
-//        setup:
-//        def provider = createProvider()
-//        def http = Mock(HTTPBuilder)
-//        provider.createHttpClient(_) >> http
-//
-//        when:
-//        def token = provider.getAccessTokenAndDetails("code")
-//
-//        then:
-//        token.present
-//        1 * http.post(_ as Map, _ as Closure) >> new OAuth2Info()
-//    }
+        when:
+        def token = provider.getAccessTokenAndDetails("code")
+
+        then:
+        token.present
+        1 * http.post(_ as Map, _ as Closure) >> new OAuth2Info()
+    }
 //
 //    def "Test failed access token"() {
 //        setup:
