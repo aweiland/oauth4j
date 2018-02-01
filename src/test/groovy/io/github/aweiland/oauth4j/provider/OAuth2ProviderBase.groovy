@@ -1,5 +1,7 @@
 package io.github.aweiland.oauth4j.provider
 
+import io.github.aweiland.oauth4j.provider.flow.StartRequest
+
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import io.github.aweiland.oauth4j.support.OAuth2Info
@@ -11,7 +13,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*
 abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specification {
     
     WireMockServer wireMockServer = new WireMockServer(options().dynamicPort())
-    WireMock wireMock = new WireMock("localhost", wireMockServer.port)
+    WireMock wireMock
 
     abstract P createProvider()
 
@@ -24,10 +26,10 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         provider?.appId?.trim()
     }
 
-//    abstract MockServerClient createMockServerForToken()
-    
+
     def setup() {
         wireMockServer.start()
+        wireMock = new WireMock("localhost", wireMockServer.port())
     }
     
     def cleanup() {
@@ -36,15 +38,33 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
 
     // TODO Move this to abstract functions
     def "Test got access token"() {
-        given:
+        given: "A Facebook provider"
         def provider = createProvider()
-        provider.setAccessTokenUri("http://localhost:${wireMockServer.port}/token")
+        provider.setAccessTokenUri("http://localhost:${wireMockServer.port()}/token")
+        provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
+        def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).returnUri(FINISH_URI).build()
         
-        and:
+        and: "Mocked endpoints"
         // Not mockserver, wiremock instead!
         wireMock.register(post(urlEqualTo("/token"))
-                .willReturn(okJson("jsonstring here"))
-        )
+                .willReturn(okJson("""
+{
+  "access_token": "1234567890-asfsaf",
+  "token_type": "Bearer",
+  "expires_in":  100
+}
+                """.stripIndent())))
+                
+        wireMock.register(get(urlEqualTo("/api"))
+        .willReturn(okJson("""
+{
+  "id": "fb-98776",
+  "name": "Timmy",
+  "first_name":  "Timmy",
+  "last_name": "Alsotimmy"
+}
+                """.stripIndent())))
+        
         
         // http://www.baeldung.com/mockserver
 //        def mockServer = new MockServerClient("127.0.0.1", 1080)
@@ -69,10 +89,10 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         //def http = Mock(HTTPBuilder)
         //provider.createHttpClient(_) >> http
 
-        when:
-        def token = provider.getAccessTokenAndDetails("code")
+        when: "A token request is sent with a code"
+        def token = provider.getAccessTokenAndDetails("code", req)
 
-        then:
+        then: "The token exists"
         token.present
 //        1 * http.post(_ as Map, _ as Closure) >> new OAuth2Info()
     }

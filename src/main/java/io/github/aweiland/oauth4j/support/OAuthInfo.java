@@ -13,10 +13,6 @@ public abstract class OAuthInfo {
      */
     protected String identifier;
 
-    /**
-     * Meh!
-     */
-    protected ProviderDetails details;
 
 
     public String getProvider() {
@@ -27,8 +23,4 @@ public abstract class OAuthInfo {
         return identifier;
     }
 
-
-    public ProviderDetails getDetails() {
-        return details;
-    }
 }

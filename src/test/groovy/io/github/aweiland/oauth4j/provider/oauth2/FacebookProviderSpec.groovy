@@ -24,20 +24,20 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
     
 
     def "Test get Redirect URI from start"() {
-        given:
+        given: "A facebook provider"
         def provider = createProvider()
         def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).returnUri(FINISH_URI).build()
         def encodedFinish = URLEncoder.encode(FINISH_URI, "UTF-8")
-        def authUri = FacebookProvider.AUTH_URI
+        def authUri = provider.authUri
 
-        when:
+        when: "A start request is created"
         def red = provider.start(req)
 
-        then:
+        then: "The request is generated"
         red.present
         def authStart = red.get()
 
-        and:
+        and: "The redirect uri is not null and is correct"
         authStart.redirectUri != null
         authStart.redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
     }

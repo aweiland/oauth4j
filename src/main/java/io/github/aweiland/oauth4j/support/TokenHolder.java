@@ -15,6 +15,7 @@ public interface TokenHolder {
 
     /**
      * Get the secret token
+     * TODO What is this?
      * @return
      */
     String getSecretToken();

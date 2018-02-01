@@ -28,6 +28,7 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     public abstract Optional<ProviderDetails> getProviderDetails(String accessToken);
 
 
+    // TODO This should really be 2 calls from outside of the library, not internally chained
     protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> getAccessTokenAndDetails(String code, T req) {
         try {
             final HttpResponse<TokenResponse> json = Unirest.post(getAccessTokenUri())
@@ -61,35 +62,6 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
             return Optional.empty();
         }
 
-
-
-
-//        Client client = ClientBuilder.newClient();
-//        WebTarget target = client.target(getAccessTokenUri());
-
-//        MultivaluedMap<String, String> body = new MultivaluedHashMap<>();
-//        body.add("client_id", getAppId());
-//        body.add("client_secret", getAppSecret());
-//        body.add("redirect_uri", req.getReturnUri());
-//        body.add("code", code);
-//        body.add("grant_type", "authorization_code");
-
-//        try {
-//            final TokenResponse post = target.request(MediaType.APPLICATION_JSON_TYPE).post(Entity.form(body), TokenResponse.class);
-//
-//            return Optional.ofNullable(getProviderDetails(post.access_token).map(details -> new OAuth2Info.Builder()
-//                        .provider(details.getProvider())
-//                        .identifier(details.getProviderId())
-//                        .accessToken(post.access_token)
-//                        .expiresIn(post.expires_in)
-//                        .tokenType(post.token_type)
-//                        .refreshToken(post.refresh_token)
-//                        .details(details)
-//                        .build()).orElse(null));
-//        } catch (Exception ex) {
-//            LOGGER.error("Failed to exchange code for token", ex);
-//            return Optional.empty();
-//        }
     }
 
     /**

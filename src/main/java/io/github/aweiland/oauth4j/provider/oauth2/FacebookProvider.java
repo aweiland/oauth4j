@@ -40,6 +40,9 @@ public class FacebookProvider extends OAuth2Provider {
         return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
     }
 
+    public Optional<ProviderDetails> getDetails(U accessToken) {
+        return Optional.empty()
+    }
 
 
     private String getRedirectUri(StartRequest req) {
