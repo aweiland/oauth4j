@@ -1,7 +1,11 @@
 package io.github.aweiland.oauth4j.provider
 
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
+import io.github.aweiland.oauth4j.support.OAuth2Info
 import spock.lang.Specification
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import static com.github.tomakehurst.wiremock.client.WireMock.*
 
 
 abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specification {
@@ -20,7 +24,7 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         provider?.appId?.trim()
     }
 
-    abstract MockServerClient createMockServerForToken()
+//    abstract MockServerClient createMockServerForToken()
     
     def setup() {
         wireMockServer.start()
@@ -39,29 +43,27 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         and:
         // Not mockserver, wiremock instead!
         wireMock.register(post(urlEqualTo("/token"))
-                .willReturn(aResponse())
-                .withStatus(200)
-                .withBody(expectedUserName)
-        ))
+                .willReturn(okJson("jsonstring here"))
+        )
         
         // http://www.baeldung.com/mockserver
-        def mockServer = new MockServerClient("127.0.0.1", 1080)
-            .when(request()
-                    .withMethod("POST")
-                    .withPath("/token")
-                     .withBody(exact("{username: 'foo', password: 'bar'}")))
-            .respond(response()
-                .withStatusCode(HttpStatusCode.OK_200.code())
-                .withHeaders(
-                    header(CONTENT_TYPE.toString(), MediaType.JSON.toString())
-                )
-                .withBody("""
-{
-  "access_token": "1234567890-asfsaf", 
-  "token_type": "Bearer",
-  "expires_in":  100
-}
-                """.stripIndent()))
+//        def mockServer = new MockServerClient("127.0.0.1", 1080)
+//            .when(request()
+//                    .withMethod("POST")
+//                    .withPath("/token")
+//                     .withBody(exact("{username: 'foo', password: 'bar'}")))
+//            .respond(response()
+//                .withStatusCode(HttpStatusCode.OK_200.code())
+//                .withHeaders(
+//                    header(CONTENT_TYPE.toString(), MediaType.JSON.toString())
+//                )
+//                .withBody("""
+//{
+//  "access_token": "1234567890-asfsaf",
+//  "token_type": "Bearer",
+//  "expires_in":  100
+//}
+//                """.stripIndent()))
                 
         
         //def http = Mock(HTTPBuilder)
@@ -72,7 +74,7 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
 
         then:
         token.present
-        1 * http.post(_ as Map, _ as Closure) >> new OAuth2Info()
+//        1 * http.post(_ as Map, _ as Closure) >> new OAuth2Info()
     }
 //
 //    def "Test failed access token"() {
