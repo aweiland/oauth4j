@@ -13,16 +13,23 @@ public abstract class SocialProvider<T extends OAuthInfo> {
     private String appId;
     private String appSecret;
 
-    // todo make final and require in constructor
+    private String authUri;
+    private String accessTokenUri;
+    private String apiUri;
+
+    
     private final String name;
     private final String displayName;
 
 
-    public SocialProvider(String name, String displayName, String appId, String appSecret) {
+    public SocialProvider(String name, String displayName, String appId, String appSecret, String authUri, String accessTokenUri, String apiUri) {
         this.name = name;
         this.displayName = displayName;
         this.appId = appId;
         this.appSecret = appSecret;
+        this.authUri = authUri;
+        this.accessTokenUri = accessTokenUri;
+        this.apiUri = apiUri;
     }
 
 
@@ -39,12 +46,29 @@ public abstract class SocialProvider<T extends OAuthInfo> {
     public abstract Optional<T> verify(AuthVerify req);
 
 
-    protected abstract String getAuthUri();
-    // Useful for testing
-    protected abstract void setAuthUri(String uri);
-    protected abstract String getAccessTokenUri();
+    protected String getAuthUri() {
+        return this.authUri;
+    }
     
-    protected abstract void setAccessTokenUri(String ui);
+    protected void setAuthUri(String uri) {
+        this.authUri = uri;
+    }
+    
+    protected String getAccessTokenUri() {
+        return this.accessTokenUri;
+    }
+    
+    protected void setAccessTokenUri(String uri) {
+        this.accessTokenUri = uri;
+    }
+    
+    protected String getApiUri() {
+        return this.apiUri;
+    }
+    
+    protected void setApiUri(String uri) {
+        this.apiUri = uri;
+    }
 
 
     public String getAppId() {

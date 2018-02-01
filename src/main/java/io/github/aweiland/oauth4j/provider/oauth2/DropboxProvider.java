@@ -19,14 +19,14 @@ import java.util.Optional;
 public class DropboxProvider extends OAuth2Provider {
     Logger LOGGER = LoggerFactory.getLogger(DropboxProvider.class);
 
-    private static final String AUTH_URI = "https://www.dropbox.com/1/oauth2/authorize";
-    private static final String ACCESS_TOKEN_URI = "https://api.dropbox.com/1/oauth2/token";
-    private static final String API_URI = "http://api.dropboxapi.com/1/account/info";
+    private static final String DEFAULT_AUTH_URI = "https://www.dropbox.com/1/oauth2/authorize";
+    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://api.dropbox.com/1/oauth2/token";
+    private static final String DEFAULT_API_URI = "http://api.dropboxapi.com/1/account/info";
 
 
 
     public DropboxProvider(String appId, String appSecret) {
-        super("dropbox", "Dropbox", appId, appSecret);
+        super("dropbox", "Dropbox", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class DropboxProvider extends OAuth2Provider {
     @Override
     public Optional<ProviderDetails> getProviderDetails(String accessToken) {
         try {
-            final HttpResponse<DropboxDetails> response = Unirest.get(API_URI).queryString("access_token", accessToken)
+            final HttpResponse<DropboxDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken)
                     .asObject(DropboxDetails.class);
 //            final DropboxDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(DropboxDetails.class);
             DropboxDetails details = response.getBody();
@@ -57,15 +57,6 @@ public class DropboxProvider extends OAuth2Provider {
         }
     }
 
-    @Override
-    protected String getAuthUri() {
-        return AUTH_URI;
-    }
-
-    @Override
-    protected String getAccessTokenUri() {
-        return ACCESS_TOKEN_URI;
-    }
 
     private <T extends AppDataHolder & ReturnUriHolder> String getRedirectUri(T req) {
         return Unirest.get(getAuthUri())

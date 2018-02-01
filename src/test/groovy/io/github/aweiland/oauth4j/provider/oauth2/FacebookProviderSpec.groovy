@@ -2,7 +2,7 @@ package io.github.aweiland.oauth4j.provider
 
 import io.github.aweiland.oauth4j.provider.flow.StartRequest
 import io.github.aweiland.oauth4j.provider.oauth2.FacebookProvider
-import org.mockserver.client.server.MockServerClient
+
 
 
 class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
@@ -21,10 +21,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
         return provider
     }
 
-    @Override
-    MockServerClient createMockServerForToken() {
-        return null
-    }
+    
 
     def "Test get Redirect URI from start"() {
         given:

@@ -19,11 +19,11 @@ import java.util.Optional;
 
 public class TwitterProvider extends OAuth1Provider {
 
-    private static final String AUTH_URI = "https://twitter.com/oauth/request_token";
-    private static final String ACCESS_TOKEN_URI = "https://twitter.com/oauth/access_token";
+    private static final String DEFAULT_AUTH_URI = "https://twitter.com/oauth/request_token";
+    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://twitter.com/oauth/access_token";
 
     public TwitterProvider(String appId, String appSecret) {
-        super("twitter", "Twitter", appId, appSecret);
+        super("twitter", "Twitter", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, null);
 
     }
 
@@ -72,15 +72,7 @@ public class TwitterProvider extends OAuth1Provider {
         }
     }
 
-    @Override
-    protected String getAuthUri() {
-        return AUTH_URI;
-    }
 
-    @Override
-    protected String getAccessTokenUri() {
-        return ACCESS_TOKEN_URI;
-    }
 
     private Twitter createClient(AppDataHolder req) {
         ConfigurationBuilder cb = new ConfigurationBuilder();

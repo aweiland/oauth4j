@@ -19,13 +19,13 @@ public class GoogleProvider extends OAuth2Provider {
 
     Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-    private static final String AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
-    private static final String ACCESS_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
-    private static final String API_URI = "https://www.googleapis.com/plus/v1/people/me";
+    private static final String DEFAULT_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
+    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://www.googleapis.com/oauth2/v4/token";
+    private static final String DEFAULT_API_URI = "https://www.googleapis.com/plus/v1/people/me";
 
 
     public GoogleProvider(String appId, String appSecret) {
-        super("google", "Google", appId, appSecret);
+        super("google", "Google", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GoogleProvider extends OAuth2Provider {
     public Optional<ProviderDetails> getProviderDetails(String accessToken) {
 
         try {
-            final HttpResponse<GoogleDetails> response = Unirest.get(API_URI)
+            final HttpResponse<GoogleDetails> response = Unirest.get(getApiUri())
                     .queryString("access_token", accessToken)
                     .asObject(GoogleDetails.class);
 
@@ -59,16 +59,7 @@ public class GoogleProvider extends OAuth2Provider {
 
     }
 
-    @Override
-    protected String getAuthUri() {
-        return AUTH_URI;
-    }
-
-    @Override
-    protected String getAccessTokenUri() {
-        return ACCESS_TOKEN_URI;
-    }
-
+   
     private String getRedirectUri(StartRequest req) {
         return Unirest.get(getAuthUri())
                 .queryString("client_id", this.getAppId())
