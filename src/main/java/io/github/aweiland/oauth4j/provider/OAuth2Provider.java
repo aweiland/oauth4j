@@ -28,14 +28,13 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> performCodeExchange(String code, T req) {
         try {
             final HttpResponse<TokenResponse> json = Unirest.post(getAccessTokenUri())
-//                    .header("Content-Type", "application/json")
-//                    .header("Accept", "application/json")
                     .field("client_id", getAppId())
                     .field("client_secret", getAppSecret())
                     .field("redirect_uri", req.getReturnUri())
                     .field("code", code)
                     .field("grant_type", "authorization_code")
                     .asObject(TokenResponse.class);
+
 
             if (json.getStatus() != 200) {
                 LOGGER.warn(json.getStatusText());
