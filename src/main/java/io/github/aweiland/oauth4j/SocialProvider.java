@@ -5,10 +5,12 @@ import io.github.aweiland.oauth4j.provider.flow.AuthStart;
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.support.OAuthInfo;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
+import io.github.aweiland.oauth4j.support.TokenHolder;
 
 import java.util.Optional;
 
-public abstract class SocialProvider<T extends OAuthInfo, U extends TokenHolder> {
+public abstract class SocialProvider<T extends OAuthInfo & TokenHolder> {
 
     private String appId;
     private String appSecret;
@@ -43,36 +45,36 @@ public abstract class SocialProvider<T extends OAuthInfo, U extends TokenHolder>
      * Verify, get access token, etc.
      * @return
      */
-    public abstract Optional<U> verify(AuthVerify req);
+    public abstract Optional<T> verify(AuthVerify req);
     
     
     /**
      * Use the access token to get user details
      */
-    public abstract Optional<ProviderDetails> getDetails(U accessToken);
+    public abstract Optional<ProviderDetails> getDetails(T accessToken);
 
 
-    protected String getAuthUri() {
+    public String getAuthUri() {
         return this.authUri;
     }
-    
-    protected void setAuthUri(String uri) {
+
+    public void setAuthUri(String uri) {
         this.authUri = uri;
     }
-    
-    protected String getAccessTokenUri() {
+
+    public String getAccessTokenUri() {
         return this.accessTokenUri;
     }
     
-    protected void setAccessTokenUri(String uri) {
+    public void setAccessTokenUri(String uri) {
         this.accessTokenUri = uri;
     }
-    
-    protected String getApiUri() {
+
+    public String getApiUri() {
         return this.apiUri;
     }
-    
-    protected void setApiUri(String uri) {
+
+    public void setApiUri(String uri) {
         this.apiUri = uri;
     }
 

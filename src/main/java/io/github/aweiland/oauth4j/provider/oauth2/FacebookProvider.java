@@ -37,11 +37,29 @@ public class FacebookProvider extends OAuth2Provider {
     @Override
     public Optional<OAuth2Info> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
-        return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
+        return code.map(s -> performCodeExchange(s, req)).orElse(Optional.empty());
     }
 
-    public Optional<ProviderDetails> getDetails(U accessToken) {
-        return Optional.empty()
+    @Override
+    public Optional<ProviderDetails> getDetails(OAuth2Info accessToken) {
+        // FB bday can be MM/DD/YYYY or MM/DD or YYYY
+        try {
+            final HttpResponse<FacebookDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())
+                    .queryString("fields", "name,first_name,last_name,picture").asObject(FacebookDetails.class);
+
+            final FacebookDetails details = response.getBody();
+
+            return Optional.of(new ProviderDetails.Builder()
+                    .provider("facebook")
+                    .displayName(details.name)
+                    .firstName(details.firstName)
+                    .lastName(details.lastName)
+                    .providerId(details.id).build());
+
+        } catch (Exception ex) {
+            LOGGER.error("Failed getting Facebook details", ex);
+            return Optional.empty();
+        }
     }
 
 
@@ -49,32 +67,6 @@ public class FacebookProvider extends OAuth2Provider {
         return Unirest.get(this.getAuthUri()).queryString("client_id", this.getAppId())
                 .queryString("redirect_uri", req.getReturnUri())
                 .getUrl();
-    }
-
-    @Override
-    public Optional<ProviderDetails> getProviderDetails(String accessToken) {
-        // FB bday can be MM/DD/YYYY or MM/DD or YYYY
-        try {
-//            final FacebookDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(FacebookDetails.class);
-            final HttpResponse<FacebookDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken)
-                    .queryString("fields", "name,first_name,last_name,picture").asObject(FacebookDetails.class);
-
-            final FacebookDetails details = response.getBody();
-
-            return Optional.of(new ProviderDetails.Builder()
-                    .provider("facebook")
-//                    .profileUri(resp.get("link").toString())
-                    .displayName(details.name)
-                    .firstName(details.firstName)
-                    .lastName(details.lastName)
-//                    .photoUri(NestedMapResolver.resolve(() -> {
-//                        resp.get("picture").get("data") }))
-                    .providerId(details.id).build());
-
-        } catch (Exception ex) {
-            LOGGER.error("Failed getting Facebook details", ex);
-            return Optional.empty();
-        }
     }
 
 

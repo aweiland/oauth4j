@@ -2,6 +2,9 @@ package io.github.aweiland.oauth4j.provider.flow;
 
 import io.github.aweiland.oauth4j.support.*;
 
+/**
+ * OAuth verification via code
+ */
 public class AuthVerify implements CodeHolder, RequestTokenHolder, AppDataHolder, ReturnUriHolder {
 
     private final String code;

@@ -49,10 +49,8 @@ public class TwitterProvider extends OAuth1Provider {
             String oauthVerifier = req.getCode();// getOauthVerifier();
             String oauthToken = req.getRequestToken();
             twitter.setOAuthAccessToken(new AccessToken(oauthToken, oauthVerifier));
-//            AccessToken accessToken = twitter.getOAuthAccessToken(req.getRequestToken(), oauthVerifier);
             AccessToken accessToken = twitter.getOAuthAccessToken(oauthVerifier);
             return Optional.of(new OAuth1Info.Builder().provider("twitter")
-                    .identifier(Long.valueOf(accessToken.getUserId()).toString())
                     .token(accessToken.getToken())
                     .secret(accessToken.getTokenSecret())
                     .build());
@@ -63,9 +61,9 @@ public class TwitterProvider extends OAuth1Provider {
     }
 
     @Override
-    public Optional<ProviderDetails> getProviderDetails(AppDataHolder appData, String token, String tokenSecret) {
+    public Optional<ProviderDetails> getDetails(OAuth1Info accessToken) {
         try {
-            User user = createAuthedClient(appData, token, tokenSecret).verifyCredentials();
+            User user = createAuthedClient(accessToken.getToken(), accessToken.getSecretToken()).verifyCredentials();
             return Optional.of(new ProviderDetails.Builder().provider("twitter").providerId(Long.valueOf(user.getId()).toString()).build());
         } catch (TwitterException e) {
             return Optional.empty();
@@ -82,7 +80,7 @@ public class TwitterProvider extends OAuth1Provider {
         return factory.getInstance();
     }
 
-    private Twitter createAuthedClient(AppDataHolder req, String token, String tokenSecret) {
+    private Twitter createAuthedClient(String token, String tokenSecret) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret())
                 .setOAuthAccessToken(token)

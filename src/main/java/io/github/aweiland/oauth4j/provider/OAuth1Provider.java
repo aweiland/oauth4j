@@ -16,5 +16,4 @@ public abstract class OAuth1Provider extends SocialProvider<OAuth1Info> {
     }
 
 
-    public abstract Optional<ProviderDetails> getProviderDetails(AppDataHolder appData, String accessToken, String tokenSecret);
 }

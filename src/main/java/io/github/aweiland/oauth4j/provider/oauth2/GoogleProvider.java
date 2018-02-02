@@ -36,12 +36,11 @@ public class GoogleProvider extends OAuth2Provider {
     @Override
     public Optional<OAuth2Info> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
-        return code.map(s -> getAccessTokenAndDetails(s, req)).orElse(Optional.empty());
+        return code.map(s -> performCodeExchange(s, req)).orElse(Optional.empty());
     }
 
     @Override
-    public Optional<ProviderDetails> getProviderDetails(String accessToken) {
-
+    public Optional<ProviderDetails> getDetails(OAuth2Info accessToken) {
         try {
             final HttpResponse<GoogleDetails> response = Unirest.get(getApiUri())
                     .queryString("access_token", accessToken)

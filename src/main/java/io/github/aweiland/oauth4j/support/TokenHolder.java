@@ -11,6 +11,10 @@ public interface TokenHolder {
      */
     String getToken();
 
+    /**
+     * TODO What is this?
+     * @return
+     */
     String getTokenType();
 
     /**

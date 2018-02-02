@@ -25,11 +25,7 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     }
 
 
-    public abstract Optional<ProviderDetails> getProviderDetails(String accessToken);
-
-
-    // TODO This should really be 2 calls from outside of the library, not internally chained
-    protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> getAccessTokenAndDetails(String code, T req) {
+    protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> performCodeExchange(String code, T req) {
         try {
             final HttpResponse<TokenResponse> json = Unirest.post(getAccessTokenUri())
 //                    .header("Content-Type", "application/json")
@@ -47,22 +43,58 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
             }
 
 
-            return Optional.ofNullable(getProviderDetails(json.getBody().access_token).map(details -> new OAuth2Info.Builder()
-                    .provider(details.getProvider())
-                    .identifier(details.getProviderId())
+            return Optional.of(new OAuth2Info.Builder()
+                    .provider(this.getName())
                     .accessToken(json.getBody().access_token)
                     .expiresIn(json.getBody().expires_in)
                     .tokenType(json.getBody().token_type)
                     .refreshToken(json.getBody().refresh_token)
-                    .details(details)
-                    .build()).orElse(null));
+                    .build());
 
 
         } catch (UnirestException e) {
+            LOGGER.error("Failed to verify code", e);
             return Optional.empty();
         }
-
     }
+
+
+//    // TODO This should really be 2 calls from outside of the library, not internally chained
+//    @Deprecated
+//    protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> getAccessTokenAndDetails(String code, T req) {
+//        try {
+//            final HttpResponse<TokenResponse> json = Unirest.post(getAccessTokenUri())
+////                    .header("Content-Type", "application/json")
+////                    .header("Accept", "application/json")
+//                    .field("client_id", getAppId())
+//                    .field("client_secret", getAppSecret())
+//                    .field("redirect_uri", req.getReturnUri())
+//                    .field("code", code)
+//                    .field("grant_type", "authorization_code")
+//                    .asObject(TokenResponse.class);
+//
+//            if (json.getStatus() != 200) {
+//                LOGGER.warn(json.getStatusText());
+//                return Optional.empty();
+//            }
+//
+//
+//            return Optional.ofNullable(getProviderDetails(json.getBody().access_token).map(details -> new OAuth2Info.Builder()
+//                    .provider(details.getProvider())
+//                    .identifier(details.getProviderId())
+//                    .accessToken(json.getBody().access_token)
+//                    .expiresIn(json.getBody().expires_in)
+//                    .tokenType(json.getBody().token_type)
+//                    .refreshToken(json.getBody().refresh_token)
+//
+//                    .build()).orElse(null));
+//
+//
+//        } catch (UnirestException e) {
+//            return Optional.empty();
+//        }
+//
+//    }
 
     /**
      * OAuth 2 code -> Token response holder
