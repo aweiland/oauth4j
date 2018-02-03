@@ -7,6 +7,8 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import io.github.aweiland.oauth4j.support.OAuth2Info
 import spock.lang.Specification
+import twitter4j.auth.OAuth2Token
+
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
@@ -24,15 +26,6 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
 
     abstract P createProvider()
 
-    def "test provider is configured"() {
-        setup:
-        def provider = createProvider()
-
-        expect:
-        provider?.appSecret?.trim()
-        provider?.appId?.trim()
-    }
-
 
     def setup() {
         wireMockServer.start()
@@ -43,60 +36,53 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         wireMockServer.stop()
     }
 
-    // TODO Move this to abstract functions
-    def "Test got access token"() {
-        given: "A Facebook provider"
+
+    def "Test provider is configured"() {
+        setup:
         def provider = createProvider()
-        provider.setAccessTokenUri("http://localhost:${wireMockServer.port()}/token")
-        provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
 
-        def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).returnUri(FINISH_URI).build()
-        
-        and: "Mocked endpoints"
-        // Not mockserver, wiremock instead!
-        wireMock.register(post(urlEqualTo("/token"))
-                .willReturn(okJson("""{
-  "access_token": "1234567890-asfsaf",
-  "token_type": "Bearer",
-  "expires_in":  100
-}""".stripIndent())))
-
-        when: "A token request is sent with a code"
-        def token = provider.performCodeExchange("code", req)
-
-        then: "The token exists"
-        token.present
-        token.get().token == "1234567890-asfsaf"
-        token.get().expiresIn == 100
-        token.get().tokenType == "Bearer"
+        expect:
+        provider?.appSecret?.trim()
+        provider?.appId?.trim()
     }
 
 
-//        wireMock.register(get(urlEqualTo("/api"))
-//        .willReturn(okJson("""
-//{
-//  "id": "fb-98776",
-//  "name": "Timmy",
-//  "first_name":  "Timmy",
-//  "last_name": "Alsotimmy"
-//}
-//                """.stripIndent())))
+    def "Test failed access token"() {
+        given:
+        def provider = createProvider()
+        def req = new StartRequest.Builder().appId("asf").appSecret("asf").returnUri("sfadf").build()
 
+        and: "Mocked endpoints will fail"
+        wireMock.register(post(urlEqualTo("/token"))
+                .willReturn(badRequest()))
 
+        when:
+        def token = provider.performCodeExchange("code", req)
 
+        then:
+        !token.present
+    }
 
-//
-//    def "Test failed access token"() {
-//        setup:
-//        def provider = createProvider()
-//        def http = Mock(HTTPBuilder)
-//        provider.createHttpClient(_) >> http
-//
-//        when:
-//        def token = provider.getAccessTokenAndDetails("code")
-//
-//        then:
-//        1 * http.post(_ as Map, _ as Closure) >> { throw new HttpResponseException() }
-//        !token.present
-//    }
+    def "Test failed getting provider details"() {
+        given:
+        def provider = createProvider()
+
+        and: "Valid token"
+        and: "A valid token"
+        def token = new OAuth2Info.Builder()
+                .provider("facebook")
+                .tokenType("Bearer")
+                .accessToken("asfasdfsadfa")
+                .build()
+
+        and: "Mocked endpoints will fail"
+        wireMock.register(post(urlPathEqualTo("/api"))
+                .willReturn(badRequest()))
+
+        when:
+        def details = provider.getDetails(token)
+
+        then:
+        !details.present
+    }
 }

@@ -45,6 +45,7 @@ public abstract class SocialProvider<T extends OAuthInfo & TokenHolder> {
      * Verify, get access token, etc.
      * @return
      */
+    @Deprecated
     public abstract Optional<T> verify(AuthVerify req);
     
     

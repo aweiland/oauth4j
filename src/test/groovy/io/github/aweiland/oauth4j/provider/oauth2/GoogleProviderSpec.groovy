@@ -1,14 +1,13 @@
-package io.github.aweiland.oauth4j.provider
+package io.github.aweiland.oauth4j.provider.oauth2
 
+import io.github.aweiland.oauth4j.provider.OAuth2ProviderBase
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify
 import io.github.aweiland.oauth4j.provider.flow.StartRequest
-import io.github.aweiland.oauth4j.provider.oauth2.FacebookProvider
 import io.github.aweiland.oauth4j.support.OAuth2Info
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
-
-class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
+class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
 
     final CLIENT_ID = "dsafwgqsdfasfasf"
     final CLIENT_SECRET = "985835t3-sdfasfads"
@@ -16,11 +15,11 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
     final TOKEN_URI = "https://graph.facebook.com/v2.3/oauth/access_token"
     final API_URI = "https://graph.facebook.com/v2.3"
 
-    final FINISH_URI = "http://site.com/facebook/finish"
+    final FINISH_URI = "http://site.com/google/finish"
 
     @Override
-    FacebookProvider createProvider() {
-        def provider = new FacebookProvider(CLIENT_ID, CLIENT_SECRET)
+    GoogleProvider createProvider() {
+        def provider = new GoogleProvider(CLIENT_ID, CLIENT_SECRET)
         return provider
     }
 
@@ -29,7 +28,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
     def "Test get Redirect URI from start"() {
         given: "A facebook provider"
         def provider = createProvider()
-        def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).returnUri(FINISH_URI).build()
+        def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).scopes(Optional.of("test")).returnUri(FINISH_URI).build()
         def encodedFinish = URLEncoder.encode(FINISH_URI, "UTF-8")
         def authUri = provider.authUri
 
@@ -38,11 +37,13 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
 
         then: "The request is generated"
         red.present
-        def authStart = red.get()
+
 
         and: "The redirect uri is not null and is correct"
-        authStart.redirectUri != null
-        authStart.redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
+        with(red.get()) {
+            redirectUri != null
+            redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}&response_type=code&scope=test"
+        }
     }
 
 
@@ -78,7 +79,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
     }
 
 
-    def "Test get Facebook details"() {
+    def "Test get Google details"() {
         given:
         def provider = createProvider()
         provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
@@ -88,15 +89,14 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
             .provider("facebook")
             .tokenType("Bearer")
             .accessToken("asfasdfsadfa")
+            .refreshToken("afsdfasf")
             .build()
 
         and:
         wireMock.register(get(urlPathEqualTo("/api"))
         .willReturn(okJson("""{
-  "id": "fb-98776",
-  "name": "Timmy",
-  "first_name":  "Timmy",
-  "last_name": "Alsotimmy"
+  "id": "goog-98776",
+  "displayName": "Timmy"
 }""".stripIndent())))
 
         when:
@@ -105,10 +105,8 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
         then:
         details.present
         with(details.get()) {
-            providerId == "fb-98776"
+            providerId == "goog-98776"
             displayName == "Timmy"
-            firstName == "Timmy"
-            lastName == "Alsotimmy"
         }
     }
 }

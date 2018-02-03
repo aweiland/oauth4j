@@ -47,14 +47,18 @@ public class FacebookProvider extends OAuth2Provider {
             final HttpResponse<FacebookDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())
                     .queryString("fields", "name,first_name,last_name,picture").asObject(FacebookDetails.class);
 
-            final FacebookDetails details = response.getBody();
+            if (response.getStatus() == 200) {
+                final FacebookDetails details = response.getBody();
 
-            return Optional.of(new ProviderDetails.Builder()
-                    .provider("facebook")
-                    .displayName(details.name)
-                    .firstName(details.firstName)
-                    .lastName(details.lastName)
-                    .providerId(details.id).build());
+                return Optional.of(new ProviderDetails.Builder()
+                        .provider("facebook")
+                        .displayName(details.name)
+                        .firstName(details.firstName)
+                        .lastName(details.lastName)
+                        .providerId(details.id).build());
+            } else {
+                return Optional.empty();
+            }
 
         } catch (Exception ex) {
             LOGGER.error("Failed getting Facebook details", ex);

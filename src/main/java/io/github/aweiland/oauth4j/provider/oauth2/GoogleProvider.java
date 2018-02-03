@@ -46,12 +46,16 @@ public class GoogleProvider extends OAuth2Provider {
                     .queryString("access_token", accessToken)
                     .asObject(GoogleDetails.class);
 
-            final GoogleDetails details = response.getBody();
-            return Optional.of(new ProviderDetails.Builder()
-                    .provider("google")
-                    .providerId(details.id)
-                    .displayName(details.displayName)
-                    .build());
+            if (response.getStatus() == 200) {
+                final GoogleDetails details = response.getBody();
+                return Optional.of(new ProviderDetails.Builder()
+                        .provider("google")
+                        .providerId(details.id)
+                        .displayName(details.displayName)
+                        .build());
+            } else {
+                return Optional.empty();
+            }
         } catch (Exception e) {
             return Optional.empty();
         }
