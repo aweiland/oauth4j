@@ -21,16 +21,17 @@ public class TwitterProvider extends OAuth1Provider {
 
     private static final String DEFAULT_AUTH_URI = "https://twitter.com/oauth/request_token";
     private static final String DEFAULT_ACCESS_TOKEN_URI = "https://twitter.com/oauth/access_token";
+    private static final String DEFAULT_API_URI = "https://api.twitter.com/1.1";
 
     public TwitterProvider(String appId, String appSecret) {
-        super("twitter", "Twitter", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, null);
+        super("twitter", "Twitter", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
 
     }
 
     @Override
     public Optional<AuthStart> start(StartRequest req) {
         try {
-            Twitter twitter = createClient(req);
+            Twitter twitter = createClient();
             RequestToken requestToken = twitter.getOAuthRequestToken(req.getReturnUri());
 
             return Optional.of(new AuthStart.Builder().redirectUri(requestToken.getAuthorizationURL()).requestToken(requestToken.getToken()).build());
@@ -40,21 +41,21 @@ public class TwitterProvider extends OAuth1Provider {
 
     }
 
-
-
     @Override
     public Optional<OAuth1Info> verify(AuthVerify req) {
-        Twitter twitter = createClient(req); // new TwitterFactory().getInstance();//FIXME createClient(req);
+        Twitter twitter = createClient(); // new TwitterFactory().getInstance();//FIXME createClient(req);
         try {
             String oauthVerifier = req.getCode();// getOauthVerifier();
             String oauthToken = req.getRequestToken();
             twitter.setOAuthAccessToken(new AccessToken(oauthToken, oauthVerifier));
             AccessToken accessToken = twitter.getOAuthAccessToken(oauthVerifier);
+
             return Optional.of(new OAuth1Info.Builder().provider("twitter")
                     .token(accessToken.getToken())
                     .secret(accessToken.getTokenSecret())
                     .build());
         } catch (TwitterException e) {
+            // TODO Logger
             return Optional.empty();
         }
 
@@ -64,7 +65,10 @@ public class TwitterProvider extends OAuth1Provider {
     public Optional<ProviderDetails> getDetails(OAuth1Info accessToken) {
         try {
             User user = createAuthedClient(accessToken.getToken(), accessToken.getSecretToken()).verifyCredentials();
-            return Optional.of(new ProviderDetails.Builder().provider("twitter").providerId(Long.valueOf(user.getId()).toString()).build());
+            return Optional.of(new ProviderDetails.Builder()
+                    .provider("twitter")
+                    .providerId(Long.valueOf(user.getId())
+                            .toString()).build());
         } catch (TwitterException e) {
             return Optional.empty();
         }
@@ -72,9 +76,13 @@ public class TwitterProvider extends OAuth1Provider {
 
 
 
-    private Twitter createClient(AppDataHolder req) {
+    private Twitter createClient() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret());
+        cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret())
+//            .setOAuthAuthorizationURL(getAuthUri())
+                .setOAuthRequestTokenURL(getAuthUri())
+            .setOAuthAccessTokenURL(getAccessTokenUri())
+            .setRestBaseURL(getApiUri());
 
         TwitterFactory factory = new TwitterFactory(cb.build());
         return factory.getInstance();
@@ -84,7 +92,10 @@ public class TwitterProvider extends OAuth1Provider {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setOAuthConsumerKey(getAppId()).setOAuthConsumerSecret(getAppSecret())
                 .setOAuthAccessToken(token)
-                .setOAuthAccessTokenSecret(tokenSecret);
+                .setOAuthAccessTokenSecret(tokenSecret)
+                .setOAuthAuthorizationURL(getAuthUri())
+                .setOAuthAccessTokenURL(getAccessTokenUri())
+                .setRestBaseURL(getApiUri());
 
         TwitterFactory factory = new TwitterFactory(cb.build());
         return factory.getInstance();

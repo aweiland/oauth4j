@@ -1,5 +1,6 @@
-package io.github.aweiland.oauth4j.provider
+package io.github.aweiland.oauth4j.provider.oauth2
 
+import io.github.aweiland.oauth4j.provider.OAuth2ProviderBase
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify
 import io.github.aweiland.oauth4j.provider.flow.StartRequest
 import io.github.aweiland.oauth4j.provider.oauth2.FacebookProvider

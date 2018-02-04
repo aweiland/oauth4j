@@ -1,19 +1,18 @@
 package io.github.aweiland.oauth4j.provider
 
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.WireMock
 import io.github.aweiland.oauth4j.ProviderRegistry
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify
 import io.github.aweiland.oauth4j.provider.flow.StartRequest
-
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
+import io.github.aweiland.oauth4j.support.OAuth1Info
 import io.github.aweiland.oauth4j.support.OAuth2Info
 import spock.lang.Specification
 
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import static com.github.tomakehurst.wiremock.client.WireMock.*
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 
-
-abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specification {
+abstract class OAuth1ProviderBase<P extends OAuth1Provider> extends Specification {
     
     WireMockServer wireMockServer = new WireMockServer(options().dynamicPort())
     WireMock wireMock
@@ -50,14 +49,24 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
     def "Test failed access token"() {
         given:
         def provider = createProvider()
-        def req = new AuthVerify.Builder().appId("asf").appSecret("asf").returnUri("sfadf").code("sfasf").build()
+        def req = new StartRequest.Builder().appId("asf").appSecret("asf").returnUri("sfadf").build()
+
+        and: "A verify request"
+        def r = new AuthVerify.Builder()
+                .appId(CLIENT_ID)
+                .appSecret(CLIENT_SECRET)
+                .code("test")
+                .returnUri(FINISH_URI)
+                .requestToken("sfsfsf")
+                .build()
+
 
         and: "Mocked endpoints will fail"
         wireMock.register(post(urlEqualTo("/token"))
                 .willReturn(badRequest()))
 
         when:
-        def token = provider.verify(req)
+        def token = provider.verify(r)
 
         then:
         !token.present
@@ -69,10 +78,10 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
 
         and: "Valid token"
         and: "A valid token"
-        def token = new OAuth2Info.Builder()
+        def token = new OAuth1Info.Builder()
                 .provider("facebook")
-                .tokenType("Bearer")
-                .accessToken("asfasdfsadfa")
+                .token("asfasdfsadfa")
+                .secret("ssdfsfsfsfsf")
                 .build()
 
         and: "Mocked endpoints will fail"
