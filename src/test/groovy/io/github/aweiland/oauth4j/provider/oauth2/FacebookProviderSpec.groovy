@@ -39,11 +39,13 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
 
         then: "The request is generated"
         red.present
-        def authStart = red.get()
+        
 
         and: "The redirect uri is not null and is correct"
-        authStart.redirectUri != null
-        authStart.redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
+        with (red.get()) {
+            redirectUri != null
+            redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}"
+        }
     }
 
 
@@ -69,13 +71,17 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
 }""".stripIndent())))
 
         when: "A token request is sent with a code"
-        def token = provider.verify(r)
+        def verify = provider.verify(r)
 
         then: "The token exists"
-        token.present
-        token.get().token == "1234567890-asfsaf"
-        token.get().expiresIn == 100
-        token.get().tokenType == "Bearer"
+        verify.present
+        
+        and: "Token data is correct"
+        with (verify.get()) {
+            token == "1234567890-asfsaf"
+            expiresIn == 100
+            tokenType == "Bearer"
+        }
     }
 
 
