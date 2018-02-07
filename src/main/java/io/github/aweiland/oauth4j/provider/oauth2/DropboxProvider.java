@@ -8,6 +8,7 @@ import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuth2Info;
+import io.github.aweiland.oauth4j.support.OAuthInfo;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
 import io.github.aweiland.oauth4j.support.ReturnUriHolder;
 import org.slf4j.Logger;
@@ -35,13 +36,13 @@ public class DropboxProvider extends OAuth2Provider {
     }
 
     @Override
-    public Optional<OAuth2Info> verify(AuthVerify req) {
+    public Optional<OAuthInfo> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> performCodeExchange(s, req)).orElse(Optional.empty());
     }
 
     @Override
-    public Optional<ProviderDetails> getDetails(OAuth2Info accessToken) {
+    public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         try {
             final HttpResponse<DropboxDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken)
                     .asObject(DropboxDetails.class);

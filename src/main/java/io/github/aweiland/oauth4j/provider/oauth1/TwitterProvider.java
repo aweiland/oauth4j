@@ -6,6 +6,7 @@ import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuth1Info;
+import io.github.aweiland.oauth4j.support.OAuthInfo;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -42,7 +43,7 @@ public class TwitterProvider extends OAuth1Provider {
     }
 
     @Override
-    public Optional<OAuth1Info> verify(AuthVerify req) {
+    public Optional<OAuthInfo> verify(AuthVerify req) {
         Twitter twitter = createClient(); // new TwitterFactory().getInstance();//FIXME createClient(req);
         try {
             String oauthVerifier = req.getCode();// getOauthVerifier();
@@ -62,7 +63,7 @@ public class TwitterProvider extends OAuth1Provider {
     }
 
     @Override
-    public Optional<ProviderDetails> getDetails(OAuth1Info accessToken) {
+    public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         try {
             User user = createAuthedClient(accessToken.getToken(), accessToken.getSecretToken()).verifyCredentials();
             return Optional.of(new ProviderDetails.Builder()

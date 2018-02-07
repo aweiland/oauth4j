@@ -9,6 +9,7 @@ import io.github.aweiland.oauth4j.provider.flow.AuthStart;
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.support.OAuth2Info;
+import io.github.aweiland.oauth4j.support.OAuthInfo;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,13 +35,13 @@ public class GoogleProvider extends OAuth2Provider {
     }
 
     @Override
-    public Optional<OAuth2Info> verify(AuthVerify req) {
+    public Optional<OAuthInfo> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> performCodeExchange(s, req)).orElse(Optional.empty());
     }
 
     @Override
-    public Optional<ProviderDetails> getDetails(OAuth2Info accessToken) {
+    public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         try {
             final HttpResponse<GoogleDetails> response = Unirest.get(getApiUri())
                     .queryString("access_token", accessToken)

@@ -39,9 +39,9 @@ public class ProviderRegistry {
 
     }
 
-    private final List<SocialProvider<?>> providers;
+    private final List<SocialProvider> providers;
 
-    public ProviderRegistry(List<SocialProvider<?>> providers) {
+    public ProviderRegistry(List<SocialProvider> providers) {
         this.providers = providers;
     }
 
@@ -50,23 +50,25 @@ public class ProviderRegistry {
      * @param id
      * @return
      */
-    public Optional<SocialProvider<?>> get(final String id) {
+    public Optional<SocialProvider> get(final String id) {
         return providers.stream().filter(provider -> provider.getName().equals(id)).findFirst();
     }
 
-    public List<SocialProvider<?>> getAll() {
+    public List<SocialProvider> getAll() {
         return this.providers;
     }
 
-    public List<SocialProvider<?>> getOAuth2Providers() {
+    public List<OAuth2Provider> getOAuth2Providers() {
         return providers.stream()
                 .filter(provider -> OAuth2Provider.class.isAssignableFrom(provider.getClass()))
+                .map( p -> (OAuth2Provider)p)
                 .collect(Collectors.toList());
     }
 
-    public List<SocialProvider<?>> getOAuth1Providers() {
+    public List<OAuth1Provider> getOAuth1Providers() {
         return providers.stream()
                 .filter(provider -> OAuth1Provider.class.isAssignableFrom(provider.getClass()))
+                .map( p -> (OAuth1Provider)p)
                 .collect(Collectors.toList());
     }
 }

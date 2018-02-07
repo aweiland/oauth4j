@@ -10,12 +10,13 @@ import io.github.aweiland.oauth4j.support.AppDataHolder;
 import io.github.aweiland.oauth4j.support.OAuth2Info;
 import io.github.aweiland.oauth4j.support.ProviderDetails;
 import io.github.aweiland.oauth4j.support.ReturnUriHolder;
+import io.github.aweiland.oauth4j.support.OAuthInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
+public abstract class OAuth2Provider extends SocialProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OAuth2Provider.class);
 
@@ -25,7 +26,7 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
     }
 
 
-    protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> performCodeExchange(String code, T req) {
+    protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuthInfo> performCodeExchange(String code, T req) {
         try {
             final HttpResponse<TokenResponse> json = Unirest.post(getAccessTokenUri())
                     .field("client_id", getAppId())
@@ -57,43 +58,6 @@ public abstract class OAuth2Provider extends SocialProvider<OAuth2Info> {
         }
     }
 
-
-//    // TODO This should really be 2 calls from outside of the library, not internally chained
-//    @Deprecated
-//    protected <T extends AppDataHolder & ReturnUriHolder> Optional<OAuth2Info> getAccessTokenAndDetails(String code, T req) {
-//        try {
-//            final HttpResponse<TokenResponse> json = Unirest.post(getAccessTokenUri())
-////                    .header("Content-Type", "application/json")
-////                    .header("Accept", "application/json")
-//                    .field("client_id", getAppId())
-//                    .field("client_secret", getAppSecret())
-//                    .field("redirect_uri", req.getReturnUri())
-//                    .field("code", code)
-//                    .field("grant_type", "authorization_code")
-//                    .asObject(TokenResponse.class);
-//
-//            if (json.getStatus() != 200) {
-//                LOGGER.warn(json.getStatusText());
-//                return Optional.empty();
-//            }
-//
-//
-//            return Optional.ofNullable(getProviderDetails(json.getBody().access_token).map(details -> new OAuth2Info.Builder()
-//                    .provider(details.getProvider())
-//                    .identifier(details.getProviderId())
-//                    .accessToken(json.getBody().access_token)
-//                    .expiresIn(json.getBody().expires_in)
-//                    .tokenType(json.getBody().token_type)
-//                    .refreshToken(json.getBody().refresh_token)
-//
-//                    .build()).orElse(null));
-//
-//
-//        } catch (UnirestException e) {
-//            return Optional.empty();
-//        }
-//
-//    }
 
     /**
      * OAuth 2 code -> Token response holder

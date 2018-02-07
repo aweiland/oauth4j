@@ -10,7 +10,7 @@ import io.github.aweiland.oauth4j.support.TokenHolder;
 
 import java.util.Optional;
 
-public abstract class SocialProvider<T extends OAuthInfo & TokenHolder> {
+public abstract class SocialProvider {
 
     private String appId;
     private String appSecret;
@@ -45,13 +45,13 @@ public abstract class SocialProvider<T extends OAuthInfo & TokenHolder> {
      * Verify, get access token, etc.
      * @return
      */
-    public abstract Optional<T> verify(AuthVerify req);
+    public abstract Optional<OAuthInfo> verify(AuthVerify req);
     
     
     /**
      * Use the access token to get user details
      */
-    public abstract Optional<ProviderDetails> getDetails(T accessToken);
+    public abstract Optional<ProviderDetails> getDetails(OAuthInfo accessToken);
 
 
     public String getAuthUri() {

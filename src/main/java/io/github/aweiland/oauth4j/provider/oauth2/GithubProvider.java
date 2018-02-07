@@ -40,13 +40,13 @@ public class GithubProvider extends OAuth2Provider {
 
 
     @Override
-    public Optional<OAuth2Info> verify(AuthVerify req) {
+    public Optional<OAuthInfo> verify(AuthVerify req) {
         Optional<String> code = Optional.ofNullable(req.getCode());
         return code.map(s -> performCodeExchange(s, req)).orElse(Optional.empty());
     }
 
     @Override
-    public Optional<ProviderDetails> getDetails(OAuth2Info accessToken) {
+    public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         // FB bday can be MM/DD/YYYY or MM/DD or YYYY
         try {
             final HttpResponse<GithubDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())

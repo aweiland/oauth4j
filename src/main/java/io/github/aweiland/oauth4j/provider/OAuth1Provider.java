@@ -8,7 +8,7 @@ import io.github.aweiland.oauth4j.support.ProviderDetails;
 
 import java.util.Optional;
 
-public abstract class OAuth1Provider extends SocialProvider<OAuth1Info> {
+public abstract class OAuth1Provider extends SocialProvider {
 
 
     public OAuth1Provider(String name, String displayName, String appId, String appSecret, String authUri, String accessTokenUri, String apiUri) {
