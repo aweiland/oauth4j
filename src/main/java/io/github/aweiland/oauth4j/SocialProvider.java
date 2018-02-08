@@ -5,24 +5,33 @@ import io.github.aweiland.oauth4j.provider.flow.AuthStart;
 import io.github.aweiland.oauth4j.provider.flow.AuthVerify;
 import io.github.aweiland.oauth4j.provider.flow.StartRequest;
 import io.github.aweiland.oauth4j.support.OAuthInfo;
+import io.github.aweiland.oauth4j.support.ProviderDetails;
+import io.github.aweiland.oauth4j.support.TokenHolder;
 
 import java.util.Optional;
 
-public abstract class SocialProvider<T extends OAuthInfo> {
+public abstract class SocialProvider {
 
     private String appId;
     private String appSecret;
 
-    // todo make final and require in constructor
+    private String authUri;
+    private String accessTokenUri;
+    private String apiUri;
+
+    
     private final String name;
     private final String displayName;
 
 
-    public SocialProvider(String name, String displayName, String appId, String appSecret) {
+    public SocialProvider(String name, String displayName, String appId, String appSecret, String authUri, String accessTokenUri, String apiUri) {
         this.name = name;
         this.displayName = displayName;
         this.appId = appId;
         this.appSecret = appSecret;
+        this.authUri = authUri;
+        this.accessTokenUri = accessTokenUri;
+        this.apiUri = apiUri;
     }
 
 
@@ -33,14 +42,41 @@ public abstract class SocialProvider<T extends OAuthInfo> {
     public abstract Optional<AuthStart> start(StartRequest req);
 
     /**
-     * Verify, get access token, etc.  Return details
+     * Verify, get access token, etc.
      * @return
      */
-    public abstract Optional<T> verify(AuthVerify req);
+    public abstract Optional<OAuthInfo> verify(AuthVerify req);
+    
+    
+    /**
+     * Use the access token to get user details
+     */
+    public abstract Optional<ProviderDetails> getDetails(OAuthInfo accessToken);
 
 
-    protected abstract String getAuthUri();
-    protected abstract String getAccessTokenUri();
+    public String getAuthUri() {
+        return this.authUri;
+    }
+
+    public void setAuthUri(String uri) {
+        this.authUri = uri;
+    }
+
+    public String getAccessTokenUri() {
+        return this.accessTokenUri;
+    }
+    
+    public void setAccessTokenUri(String uri) {
+        this.accessTokenUri = uri;
+    }
+
+    public String getApiUri() {
+        return this.apiUri;
+    }
+
+    public void setApiUri(String uri) {
+        this.apiUri = uri;
+    }
 
 
     public String getAppId() {

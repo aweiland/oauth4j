@@ -1,7 +1,7 @@
 package io.github.aweiland.oauth4j.support;
 
 /**
- * Created by aweiland on 1/29/16.
+ *
  */
 public class OAuth1Info extends OAuthInfo {
 
@@ -10,8 +10,7 @@ public class OAuth1Info extends OAuthInfo {
 
     private OAuth1Info(Builder builder) {
         provider = builder.provider;
-        identifier = builder.identifier;
-        details = builder.details;
+
         token = builder.token;
         secret = builder.secret;
     }
@@ -21,15 +20,25 @@ public class OAuth1Info extends OAuthInfo {
         return token;
     }
 
-    public String getSecret() {
+    @Override
+    public String getTokenType() {
+        return null;
+    }
+
+    @Override
+    public String getSecretToken() {
         return secret;
     }
+
+    @Override
+    public String getRefreshToken() {
+        throw new UnsupportedOperationException("Secret not supported in OAuth 1.");
+    }
+
 
 
     public static final class Builder {
         private String provider;
-        private String identifier;
-        private ProviderDetails details;
         private String token;
         private String secret;
 
@@ -38,8 +47,6 @@ public class OAuth1Info extends OAuthInfo {
 
         public Builder(OAuth1Info copy) {
             this.provider = copy.provider;
-            this.identifier = copy.identifier;
-            this.details = copy.details;
             this.token = copy.token;
             this.secret = copy.secret;
         }
@@ -49,15 +56,6 @@ public class OAuth1Info extends OAuthInfo {
             return this;
         }
 
-        public Builder identifier(String val) {
-            identifier = val;
-            return this;
-        }
-
-        public Builder details(ProviderDetails val) {
-            details = val;
-            return this;
-        }
 
         public Builder token(String val) {
             token = val;

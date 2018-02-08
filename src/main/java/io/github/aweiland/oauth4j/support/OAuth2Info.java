@@ -2,8 +2,9 @@ package io.github.aweiland.oauth4j.support;
 
 /**
  * OAuth 2 user info
+ * TODO This heirarchy might be renamed because we're removing ProviderDetails as a member
  */
-public class OAuth2Info extends OAuthInfo implements TokenHolder {
+public class OAuth2Info extends OAuthInfo {
 
     private final String accessToken;
     private final String tokenType;
@@ -12,8 +13,7 @@ public class OAuth2Info extends OAuthInfo implements TokenHolder {
 
     private OAuth2Info(Builder builder) {
         provider = builder.provider;
-        identifier = builder.identifier;
-        details = builder.details;
+
         accessToken = builder.accessToken;
         tokenType = builder.tokenType;
         expiresIn = builder.expiresIn;
@@ -48,7 +48,6 @@ public class OAuth2Info extends OAuthInfo implements TokenHolder {
     public static final class Builder {
         private String provider;
         private String identifier;
-        private ProviderDetails details;
         private String accessToken;
         private String tokenType;
         private Integer expiresIn;
@@ -59,8 +58,6 @@ public class OAuth2Info extends OAuthInfo implements TokenHolder {
 
         public Builder(OAuth2Info copy) {
             this.provider = copy.provider;
-            this.identifier = copy.identifier;
-            this.details = copy.details;
             this.accessToken = copy.accessToken;
             this.tokenType = copy.tokenType;
             this.expiresIn = copy.expiresIn;
@@ -77,10 +74,6 @@ public class OAuth2Info extends OAuthInfo implements TokenHolder {
             return this;
         }
 
-        public Builder details(ProviderDetails val) {
-            details = val;
-            return this;
-        }
 
         public Builder accessToken(String val) {
             accessToken = val;

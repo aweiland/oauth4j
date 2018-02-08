@@ -14,17 +14,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public class FacebookProvider extends OAuth2Provider {
+public class GithubProvider extends OAuth2Provider {
 
-    public static final String DEFAULT_AUTH_URI = "https://graph.facebook.com/v2.5/oauth/authorize";
-    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://graph.facebook.com/v2.5/oauth/access_token";
-    private static final String DEFAULT_API_URI = "https://graph.facebook.com/v2.5/me";
+    public static final String DEFAULT_AUTH_URI = "https://github.com/login/oauth/authorize";
+    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://github.com/login/oauth/access_token";
+    private static final String DEFAULT_API_URI = "https://api.github.com/user";
+    private static final String DEFAULT_SCOPES = "read:user";
 
-    Logger LOGGER = LoggerFactory.getLogger(FacebookProvider.class);
+    Logger LOGGER = LoggerFactory.getLogger(GithubProvider.class);
+    
+    private String scopes = DEFAULT_SCOPES;
+    public String getScopes() { return scopes; }
+    public void setScopes(String scopes) { this.scopes = scopes; }
 
 
-    public FacebookProvider(String appId, String appSecret) {
-        super("facebook", "Facebook", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
+    public GithubProvider(String appId, String appSecret) {
+        super("github", "GitHub", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
     }
 
     @Override
@@ -44,24 +49,23 @@ public class FacebookProvider extends OAuth2Provider {
     public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         // FB bday can be MM/DD/YYYY or MM/DD or YYYY
         try {
-            final HttpResponse<FacebookDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())
-                    .queryString("fields", "name,first_name,last_name,picture").asObject(FacebookDetails.class);
+            final HttpResponse<GithubDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())
+                    .asObject(GithubDetails.class);
 
             if (response.getStatus() == 200) {
-                final FacebookDetails details = response.getBody();
+                final GithubDetails details = response.getBody();
 
                 return Optional.of(new ProviderDetails.Builder()
-                        .provider("facebook")
+                        .provider("github")
                         .displayName(details.name)
-                        .firstName(details.firstName)
-                        .lastName(details.lastName)
+                        .firstName(details.login)
                         .providerId(details.id).build());
             } else {
                 return Optional.empty();
             }
 
         } catch (Exception ex) {
-            LOGGER.error("Failed getting Facebook details", ex);
+            LOGGER.error("Failed getting GitHub details", ex);
             return Optional.empty();
         }
     }
@@ -70,22 +74,19 @@ public class FacebookProvider extends OAuth2Provider {
     private String getRedirectUri(StartRequest req) {
         return Unirest.get(this.getAuthUri()).queryString("client_id", this.getAppId())
                 .queryString("redirect_uri", req.getReturnUri())
+                .queryString("scope", this.getScopes())
                 .getUrl();
     }
 
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class FacebookDetails {
+    public static class GithubDetails {
 
         public String id;
 
         public String name;
-
-        @JsonProperty("first_name")
-        public String firstName;
-
-        @JsonProperty("last_name")
-        String lastName;
+        
+        public String login;
 
 
     }
