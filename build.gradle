@@ -4,7 +4,7 @@ apply plugin: 'maven'
 apply plugin: 'groovy'
 
 project.group = 'com.github.aweiland'
-project.version = '1.0.4-SNAPSHOT'
+project.version = '1.0.5-SNAPSHOT'
 
 //jar {
 //	baseName = 'oauth4j'
