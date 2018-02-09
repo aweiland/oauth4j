@@ -44,7 +44,8 @@ public class GoogleProvider extends OAuth2Provider {
     public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         try {
             final HttpResponse<GoogleDetails> response = Unirest.get(getApiUri())
-                    .queryString("access_token", accessToken)
+                    .header("Authorization", "Bearer " + accessToken.getToken())
+//                    .queryString("access_token", accessToken)
                     .asObject(GoogleDetails.class);
 
             if (response.getStatus() == 200) {
