@@ -49,7 +49,7 @@ public class DropboxProvider extends OAuth2Provider {
 //            final DropboxDetails details = target.request(MediaType.APPLICATION_JSON_TYPE).get(DropboxDetails.class);
             DropboxDetails details = response.getBody();
             return Optional.of(new ProviderDetails.Builder()
-                    .provider("dropbox")
+                    .provider(this.getName())
                     .providerId(details.uid)
                     .displayName(details.displayName)
                     .build());

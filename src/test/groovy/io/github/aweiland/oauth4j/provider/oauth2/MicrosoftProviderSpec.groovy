@@ -9,26 +9,26 @@ import io.github.aweiland.oauth4j.support.OAuth2Info
 import static com.github.tomakehurst.wiremock.client.WireMock.*
 
 
-class GithubProviderSpec extends OAuth2ProviderBase<GithubProvider> {
+class MicrosoftProviderSpec extends OAuth2ProviderBase<MicrosoftProvider> {
 
     final CLIENT_ID = "dsafwgqsdfasfasf"
     final CLIENT_SECRET = "985835t3-sdfasfads"
-    final AUTH_URI = "https://graph.facebook.com/v2.3/oauth/authorize"
-    final TOKEN_URI = "https://graph.facebook.com/v2.3/oauth/access_token"
-    final API_URI = "https://graph.facebook.com/v2.3"
+    final AUTH_URI = "https://login.live.com/oauth20_authorize.srf"
+    final TOKEN_URI = "https://login.live.com/oauth20_token.srf"
+    final API_URI = "https://apis.live.net/v5.0/me"
 
-    final FINISH_URI = "http://site.com/github/finish"
+    final FINISH_URI = "http://site.com/microsoft/finish"
 
     @Override
-    GithubProvider createProvider() {
-        def provider = new GithubProvider(CLIENT_ID, CLIENT_SECRET)
+    MicrosoftProvider createProvider() {
+        def provider = new MicrosoftProvider(CLIENT_ID, CLIENT_SECRET)
         return provider
     }
 
     
 
     def "Test get Redirect URI from start"() {
-        given: "A GitHub provider"
+        given: "A Microsoft provider"
         def provider = createProvider()
         def req = new StartRequest.Builder().appId(CLIENT_ID).appSecret(CLIENT_SECRET).returnUri(FINISH_URI).build()
         def encodedFinish = URLEncoder.encode(FINISH_URI, "UTF-8")
@@ -40,11 +40,10 @@ class GithubProviderSpec extends OAuth2ProviderBase<GithubProvider> {
         then: "The request is generated"
         red.present
         
-
         and: "The redirect uri is not null and is correct"
         with (red.get()) {
             redirectUri != null
-            redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}&scope=read%3Auser"
+            redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}&scope=wl.basic"
         }
     }
 
@@ -64,10 +63,11 @@ class GithubProviderSpec extends OAuth2ProviderBase<GithubProvider> {
 
         and: "Mocked endpoints"
         wireMock.register(post(urlEqualTo("/token"))
+            //.withQueryParam("scope", equalTo("wl.basick"))
             .willReturn(okJson("""{
   "access_token": "1234567890-asfsaf",
-  "token_type": "bearer",
-  "scope":  "read:user"
+  "token_type": "Bearer",
+  "expires_in":  100
 }""".stripIndent())))
 
         when: "A token request is sent with a code"
@@ -79,29 +79,31 @@ class GithubProviderSpec extends OAuth2ProviderBase<GithubProvider> {
         and: "Token data is correct"
         with (verify.get()) {
             token == "1234567890-asfsaf"
-            tokenType == "bearer"
+            expiresIn == 100
+            tokenType == "Bearer"
         }
     }
 
 
-    def "Test get GitHub details"() {
+    def "Test get Microsoft details"() {
         given:
         def provider = createProvider()
         provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
 
         and: "A valid token"
         def token = new OAuth2Info.Builder()
-            .provider("github")
-            .tokenType("bearer")
+            .provider("microsoft")
+            .tokenType("Bearer")
             .accessToken("asfasdfsadfa")
             .build()
 
         and:
         wireMock.register(get(urlPathEqualTo("/api"))
         .willReturn(okJson("""{
-  "id": "gh-98776",
+  "id": "ms-98776",
   "name": "Timmy",
-  "login":  "TimmyUser"
+  "first_name":  "Timmy",
+  "last_name": "Alsotimmy"
 }""".stripIndent())))
 
         when:
@@ -110,10 +112,11 @@ class GithubProviderSpec extends OAuth2ProviderBase<GithubProvider> {
         then:
         details.present
         with(details.get()) {
-            provider == "github"
-            providerId == "gh-98776"
+            provider == "microsoft"
+            providerId == "ms-98776"
             displayName == "Timmy"
-            firstName == "TimmyUser"
+            firstName == "Timmy"
+            lastName == "Alsotimmy"
         }
     }
 }

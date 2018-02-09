@@ -51,7 +51,7 @@ public class FacebookProvider extends OAuth2Provider {
                 final FacebookDetails details = response.getBody();
 
                 return Optional.of(new ProviderDetails.Builder()
-                        .provider("facebook")
+                        .provider(this.getName())
                         .displayName(details.name)
                         .firstName(details.firstName)
                         .lastName(details.lastName)

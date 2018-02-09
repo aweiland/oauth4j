@@ -2,7 +2,6 @@ package io.github.aweiland.oauth4j.support;
 
 /**
  * User details from OAuth providers
- * TODO Move out from under OAuthInfo and make this a separate request!
  */
 public class ProviderDetails {
 

@@ -51,7 +51,7 @@ public class GoogleProvider extends OAuth2Provider {
             if (response.getStatus() == 200) {
                 final GoogleDetails details = response.getBody();
                 return Optional.of(new ProviderDetails.Builder()
-                        .provider("google")
+                        .provider(this.getName())
                         .providerId(details.id)
                         .displayName(details.displayName)
                         .build());

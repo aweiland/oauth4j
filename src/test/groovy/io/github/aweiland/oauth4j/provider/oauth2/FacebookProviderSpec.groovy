@@ -64,7 +64,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
 
         and: "Mocked endpoints"
         wireMock.register(post(urlEqualTo("/token"))
-                .willReturn(okJson("""{
+            .willReturn(okJson("""{
   "access_token": "1234567890-asfsaf",
   "token_type": "Bearer",
   "expires_in":  100
@@ -112,6 +112,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
         then:
         details.present
         with(details.get()) {
+            provider == "facebook"
             providerId == "fb-98776"
             displayName == "Timmy"
             firstName == "Timmy"

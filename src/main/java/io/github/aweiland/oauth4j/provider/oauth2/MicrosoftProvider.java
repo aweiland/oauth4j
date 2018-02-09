@@ -14,22 +14,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
-public class GithubProvider extends OAuth2Provider {
+public class MicrosoftProvider extends OAuth2Provider {
 
-    public static final String DEFAULT_AUTH_URI = "https://github.com/login/oauth/authorize";
-    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://github.com/login/oauth/access_token";
-    private static final String DEFAULT_API_URI = "https://api.github.com/user";
-    private static final String DEFAULT_SCOPES = "read:user";
+    public static final String DEFAULT_AUTH_URI = "https://login.live.com/oauth20_authorize.srf";
+    private static final String DEFAULT_ACCESS_TOKEN_URI = "https://login.live.com/oauth20_token.srf";
+    private static final String DEFAULT_API_URI = "https://apis.live.net/v5.0/me";
+    private static final String DEFAULT_SCOPES = "wl.basic";
 
-    Logger LOGGER = LoggerFactory.getLogger(GithubProvider.class);
-    
-    private String scopes = DEFAULT_SCOPES;
-    public String getScopes() { return scopes; }
-    public void setScopes(String scopes) { this.scopes = scopes; }
+    Logger LOGGER = LoggerFactory.getLogger(MicrosoftProvider.class);
 
 
-    public GithubProvider(String appId, String appSecret) {
-        super("github", "GitHub", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
+    public MicrosoftProvider(String appId, String appSecret) {
+        super("microsoft", "Microsoft", appId, appSecret, DEFAULT_AUTH_URI, DEFAULT_ACCESS_TOKEN_URI, DEFAULT_API_URI);
     }
 
     @Override
@@ -49,23 +45,24 @@ public class GithubProvider extends OAuth2Provider {
     public Optional<ProviderDetails> getDetails(OAuthInfo accessToken) {
         // FB bday can be MM/DD/YYYY or MM/DD or YYYY
         try {
-            final HttpResponse<GithubDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())
-                    .asObject(GithubDetails.class);
+            final HttpResponse<MicrosoftDetails> response = Unirest.get(this.getApiUri()).queryString("access_token", accessToken.getToken())
+                    .asObject(MicrosoftDetails.class);
 
             if (response.getStatus() == 200) {
-                final GithubDetails details = response.getBody();
+                final MicrosoftDetails details = response.getBody();
 
                 return Optional.of(new ProviderDetails.Builder()
                         .provider(this.getName())
                         .displayName(details.name)
-                        .firstName(details.login)
+                        .firstName(details.firstName)
+                        .lastName(details.lastName)
                         .providerId(details.id).build());
             } else {
                 return Optional.empty();
             }
 
         } catch (Exception ex) {
-            LOGGER.error("Failed getting GitHub details", ex);
+            LOGGER.error("Failed getting Microsoft details", ex);
             return Optional.empty();
         }
     }
@@ -74,19 +71,23 @@ public class GithubProvider extends OAuth2Provider {
     private String getRedirectUri(StartRequest req) {
         return Unirest.get(this.getAuthUri()).queryString("client_id", this.getAppId())
                 .queryString("redirect_uri", req.getReturnUri())
-                .queryString("scope", this.getScopes())
+                .queryString("scope", DEFAULT_SCOPES)
                 .getUrl();
     }
 
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class GithubDetails {
+    public static class MicrosoftDetails {
 
         public String id;
 
         public String name;
-        
-        public String login;
+
+        @JsonProperty("first_name")
+        public String firstName;
+
+        @JsonProperty("last_name")
+        String lastName;
 
 
     }

@@ -86,7 +86,7 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
     }
 
 
-    def "Test get Google details with invalid token"() {
+    def "Test get Google details"() {
         given:
         def provider = createProvider()
         provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
@@ -114,13 +114,14 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
         then:
         details.present
         with(details.get()) {
+            provider == "google"
             providerId == "goog-98776"
             displayName == "Timmy"
         }
     }
     
     
-    def "Test get Google details"() {
+    def "Test get Google details with invalid token"() {
         given:
         def provider = createProvider()
         provider.setApiUri("http://localhost:${wireMockServer.port()}/api")

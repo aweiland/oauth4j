@@ -70,7 +70,7 @@ abstract class OAuth2ProviderBase<P extends OAuth2Provider> extends Specificatio
         and: "Valid token"
         and: "A valid token"
         def token = new OAuth2Info.Builder()
-                .provider("facebook")
+                .provider(provider.getName())
                 .tokenType("Bearer")
                 .accessToken("asfasdfsadfa")
                 .build()
