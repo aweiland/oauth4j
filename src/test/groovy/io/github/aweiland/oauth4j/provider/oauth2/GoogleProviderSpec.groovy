@@ -114,7 +114,7 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
         then:
         details.present
         with(details.get()) {
-            provider == "google"
+            delegate.provider == "google"
             providerId == "goog-98776"
             displayName == "Timmy"
         }

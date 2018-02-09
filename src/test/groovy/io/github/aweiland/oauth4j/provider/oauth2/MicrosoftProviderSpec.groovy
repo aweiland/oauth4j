@@ -112,7 +112,7 @@ class MicrosoftProviderSpec extends OAuth2ProviderBase<MicrosoftProvider> {
         then:
         details.present
         with(details.get()) {
-            provider == "microsoft"
+            delegate.provider == "microsoft"
             providerId == "ms-98776"
             displayName == "Timmy"
             firstName == "Timmy"

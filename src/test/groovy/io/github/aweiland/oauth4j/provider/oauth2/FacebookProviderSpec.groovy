@@ -112,7 +112,7 @@ class FacebookProviderSpec extends OAuth2ProviderBase<FacebookProvider> {
         then:
         details.present
         with(details.get()) {
-            provider == "facebook"
+            delegate.provider == "facebook"
             providerId == "fb-98776"
             displayName == "Timmy"
             firstName == "Timmy"

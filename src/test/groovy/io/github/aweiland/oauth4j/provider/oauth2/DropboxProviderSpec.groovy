@@ -114,7 +114,7 @@ class DropboxProviderSpec extends OAuth2ProviderBase<DropboxProvider> {
         then:
         details.present
         with(details.get()) {
-            provider == "dropbox"
+            delegate.provider == "dropbox"
             providerId == "db-98776"
             displayName == "Timmy"
             firstName == "Timmy"

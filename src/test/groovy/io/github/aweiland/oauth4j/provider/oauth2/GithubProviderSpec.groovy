@@ -110,7 +110,7 @@ class GithubProviderSpec extends OAuth2ProviderBase<GithubProvider> {
         then:
         details.present
         with(details.get()) {
-            provider == "github"
+            delegate.provider == "github"
             providerId == "gh-98776"
             displayName == "Timmy"
             firstName == "TimmyUser"
