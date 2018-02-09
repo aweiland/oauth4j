@@ -6,6 +6,7 @@ import io.github.aweiland.oauth4j.provider.flow.StartRequest
 import io.github.aweiland.oauth4j.support.OAuth2Info
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*
+//import static com.github.tomakehurst.wiremock.matching
 
 class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
 
@@ -62,7 +63,7 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
 
         and: "Mocked endpoints"
         wireMock.register(post(urlEqualTo("/token"))
-                .willReturn(okJson("""{
+            .willReturn(okJson("""{
   "access_token": "1234567890-asfsaf",
   "refresh_token": "refresh-09873547243",
   "token_type": "Bearer",
@@ -85,14 +86,14 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
     }
 
 
-    def "Test get Google details"() {
+    def "Test get Google details with invalid token"() {
         given:
         def provider = createProvider()
         provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
 
         and: "A valid token"
         def token = new OAuth2Info.Builder()
-            .provider("facebook")
+            .provider("google")
             .tokenType("Bearer")
             .accessToken("asfasdfsadfa")
             .refreshToken("afsdfasf")
@@ -101,6 +102,7 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
         // TODO require Bearer auth header
         and:
         wireMock.register(get(urlPathEqualTo("/api"))
+        .withHeader("Authorization", matching("Bearer asfasdfsadfa"))
         .willReturn(okJson("""{
   "id": "goog-98776",
   "displayName": "Timmy"
@@ -115,5 +117,31 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
             providerId == "goog-98776"
             displayName == "Timmy"
         }
+    }
+    
+    
+    def "Test get Google details"() {
+        given:
+        def provider = createProvider()
+        provider.setApiUri("http://localhost:${wireMockServer.port()}/api")
+
+        and: "A valid token"
+        def token = new OAuth2Info.Builder()
+            .provider("google")
+            .tokenType("Bearer")
+            .accessToken("asfasdfsadfa")
+            .refreshToken("afsdfasf")
+            .build()
+
+        // TODO require Bearer auth header
+        and:
+        wireMock.register(get(urlPathEqualTo("/api"))
+            .willReturn(unauthorized()));
+
+        when:
+        def details = provider.getDetails(token)
+
+        then:
+        !details.present
     }
 }
