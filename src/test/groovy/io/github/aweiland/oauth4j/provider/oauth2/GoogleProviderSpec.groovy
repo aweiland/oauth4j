@@ -98,6 +98,7 @@ class GoogleProviderSpec extends OAuth2ProviderBase<GoogleProvider> {
             .refreshToken("afsdfasf")
             .build()
 
+        // TODO require Bearer auth header
         and:
         wireMock.register(get(urlPathEqualTo("/api"))
         .willReturn(okJson("""{
