@@ -43,7 +43,7 @@ class MicrosoftProviderSpec extends OAuth2ProviderBase<MicrosoftProvider> {
         and: "The redirect uri is not null and is correct"
         with (red.get()) {
             redirectUri != null
-            redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}&scope=wl.basic"
+            redirectUri == "${authUri}?client_id=${CLIENT_ID}&redirect_uri=${encodedFinish}&response_type=code&scope=wl.basic"
         }
     }
 

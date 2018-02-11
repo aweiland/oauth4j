@@ -71,6 +71,7 @@ public class MicrosoftProvider extends OAuth2Provider {
     private String getRedirectUri(StartRequest req) {
         return Unirest.get(this.getAuthUri()).queryString("client_id", this.getAppId())
                 .queryString("redirect_uri", req.getReturnUri())
+                .queryString("response_type", "code")
                 .queryString("scope", DEFAULT_SCOPES)
                 .getUrl();
     }
